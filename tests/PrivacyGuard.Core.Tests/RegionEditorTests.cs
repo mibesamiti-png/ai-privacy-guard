@@ -9,7 +9,11 @@ public class RegionEditorTests
     public void MovingRegionPreservesItsSizeAndClampsToImage()
     {
         var initial = new NormalizedRect(0.2, 0.2, 0.3, 0.4);
-        Assert.Equal(new NormalizedRect(0.7, 0, 0.3, 0.4), RegionEditor.Move(initial, 3, -1));
+        var actual = RegionEditor.Move(initial, 3, -1);
+        Assert.Equal(0.7, actual.X, 10);
+        Assert.Equal(0, actual.Y, 10);
+        Assert.Equal(0.3, actual.Width, 10);
+        Assert.Equal(0.4, actual.Height, 10);
     }
 
     [Theory]
