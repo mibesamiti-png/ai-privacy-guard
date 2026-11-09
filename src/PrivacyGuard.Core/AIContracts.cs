@@ -27,6 +27,8 @@ public sealed class ModelManifest
     public int InputWidth { get; set; } = 640;
     public int InputHeight { get; set; } = 640;
     public string Coordinates { get; set; } = "xyxy_input_pixels";
+    // Default remains backwards-compatible with the 6-column adapter.
+    public string OutputFormat { get; set; } = "six_columns";
     public string Preprocessing { get; set; } = ModelPreprocessing.StretchNearest;
     public float ScoreThreshold { get; set; } = 0.5f;
     public float NmsIouThreshold { get; set; } = 0.5f;
@@ -69,8 +71,23 @@ public sealed class ModelManifest
             throw new InvalidDataException("Tensor names must be supplied.");
         if (InputWidth < 32 || InputHeight < 32 || InputWidth > 2048 || InputHeight > 2048)
             throw new InvalidDataException("Input dimensions must be between 32 and 2048.");
-        if (Preprocessing is not (ModelPreprocessing.StretchNearest or ModelPreprocessing.LetterboxBilinear))
+        if (Preprocessing is not (ModelPreprocessing.StretchNearest or ModelPreprocessing.LetterboxBilinear or ModelPreprocessing.NudeNetSquare))
             throw new InvalidDataException("Unsupported preprocessing mode.");
+        if (OutputFormat is not ("six_columns" or "nudenet_yolov8_18class"))
+            throw new InvalidDataException("Unsupported model output format.");
+        if (OutputFormat == "nudenet_yolov8_18class")
+        {
+            if (InputWidth != InputHeight || Preprocessing != ModelPreprocessing.NudeNetSquare ||
+                Coordinates != "xyxy_input_pixels")
+                throw new InvalidDataException("NudeNet requires square padding with pixel coordinates.");
+            foreach (var (id, label) in Classes)
+            {
+                if (!int.TryParse(id, out int index) ||
+                    index >= NudeNetYoloDecoder.ClassCount ||
+                    !string.Equals(label, NudeNetYoloDecoder.Labels[index], StringComparison.Ordinal))
+                    throw new InvalidDataException("NudeNet class ID / label mapping mismatch.");
+            }
+        }
         if (Coordinates is not ("xyxy_input_pixels" or "xyxy_normalized"))
             throw new InvalidDataException("Unknown box coordinate convention.");
         if (!float.IsFinite(ScoreThreshold) || ScoreThreshold is < 0 or > 1 ||
