@@ -47,3 +47,11 @@
 - New core watchdog tests and localhost HTTP integration test: Windows CI passed, **98/98 core tests, 1/1 browser test**. Both executable artifacts uploaded.
 - Read `docs/R5_1_OBS_BRIDGE.md` before changing architecture. No personal media in public GitHub.
 - Next action: verify the integrated `main` CI, run synthetic Windows/OBS manual smoke, then test real camera disconnect using non-sensitive footage; do not use for production live privacy.
+
+## R5.2 ongoing development
+- Branch: `feature/r5-2-recovery-audio-wpf-bridge` (do not merge without green CI).
+- Capture recovery and bounded camera read timeout; gate numbering preserved across reconnects, model faults stop processing.
+- Optional **manual** audio offset through OBS WebSocket, password from `APG_OBS_WS_PASSWORD` only; not automatic synchronization.
+- New WPF synthetic OBS demo tab starts bundled `live-bridge/AIPrivacyGuard.LiveBridge.exe`, does not expose unverified camera launch as one-click operation.
+- CI now bundles independent LiveBridge in normal Windows artifact. Validate both executables, C# core/HTTP tests and WPF compile.
+- Details: `docs/R5_2_RECOVERY_AUDIO.md`. All real hardware/OBS testing still requires local Windows.
