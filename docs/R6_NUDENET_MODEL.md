@@ -107,3 +107,12 @@ distribution or hosting should have a license review first.
    NudeNet's covered-body classes do not directly solve that use case.
 5. Keep real-time OBS broadcasting in **experimental** mode until fail-closed
    behavior and detection recall are established.
+
+## Verified implementation result (2026-11-10)
+
+- [PR Windows CI #42687318433](https://github.com/mibesamiti-png/ai-privacy-guard/actions/runs/42687318433) **PASS** on final PR head `5b11dd8efe608deab288db9e971fa6bebc994ffd`.
+- 109/109 C# core unit tests passed; 7/7 OBS tests passed; both Windows EXE artifacts produced.
+- A pinned 320n ONNX model was downloaded to an ephemeral runner, its SHA-256 verified, and two CPU inferences on synthetic 0 and 90 intensity frames completed successfully with the expected zero candidates. `MODEL_SMOKE_PASS` recorded.
+- Merged as `69d095ad87fd2e3110237633e7ee40eee21ac5b4` via PR #9.
+- Main CI [#42687745033](https://github.com/mibesamiti-png/ai-privacy-guard/actions/runs/42687745033) must be verified separately.
+- NOT tested: WPF installer download interaction on a user's PC, actual exposure detection precision/recall, underwear visibility classification, and OBS privacy reliability.
