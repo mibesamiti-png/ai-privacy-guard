@@ -59,20 +59,30 @@ internal static class VisualEval
                 normalized_xywh = new[] { c.Bounds.X, c.Bounds.Y, c.Bounds.Width, c.Bounds.Height },
                 pixel_xywh = ToBox(c.Bounds, w, h)
             }).ToArray();
-            all.Add(new { id, description, width = w, height = h,
+            string sourceUrl = sample.TryGetProperty("source_url", out var sourceEl)
+                ? (sourceEl.GetString() ?? "") : "";
+            string group = sample.TryGetProperty("group", out var groupEl)
+                ? (groupEl.GetString() ?? "original_synthetic") : "original_synthetic";
+            string license = sample.TryGetProperty("source", out var licenseEl)
+                ? (licenseEl.GetString() ?? "") : "";
+            bool permittedToRedistribute = !sample.TryGetProperty("allowed_to_redistribute",
+                out var allowEl) || allowEl.GetBoolean();
+            all.Add(new { id, description, group, source_url = sourceUrl, license,
+                source_published_in_artifact = permittedToRedistribute, width = w, height = h,
                 count = objects.Length, elapsed_ms = Math.Round(sw.Elapsed.TotalMilliseconds, 2),
-                detections = objects, annotated_bmp = annotatedName, mask_preview_bmp = maskedName });
+                detections = objects, annotated_bmp = permittedToRedistribute ? annotatedName : null,
+                mask_preview_bmp = permittedToRedistribute ? maskedName : null });
             Console.WriteLine($"CASE {id}: {objects.Length} candidate(s), {sw.Elapsed.TotalMilliseconds:0.0}ms");
         }
         var report = new
         {
-            report_type = "nudenet_320n_real_onnx_synthetic_visual_eval",
+            report_type = "nudenet_320n_real_onnx_visual_eval",
             generated_utc = DateTimeOffset.UtcNow.ToString("o"),
             model_id = manifest.ModelId,
             model_sha256 = manifest.ModelSha256,
             threshold = manifest.ScoreThreshold,
             nms_iou = manifest.NmsIouThreshold,
-            disclaimer = "Synthetic illustrations are NOT a measure of sensitivity to actual accidental exposure. No ground truth for positives. A zero-detection result is not a guarantee.",
+            disclaimer = "Published public media and synthetic controls do not provide consented positive under-skirt exposure labels. This is a domain-shift exploration, not a false-negative benchmark.",
             image_count = cases.Length,
             total_candidates = total,
             results = all
@@ -84,7 +94,7 @@ internal static class VisualEval
             "# R6 NudeNet 320n — Image inference test",
             "",
             "- Actual pinned ONNX model loaded with C# AIPrivacyGuard adapter.",
-            "- Every sample was generated procedurally with no real person, private media, or explicit anatomy.",
+            "- The dataset may include externally sourced adult fashion, cosplay and fictional-character art. See source/license entries in results.json.",
             "- This verifies end-to-end candidate output and preview; does not assess real-world accuracy.",
             $"- Model hash: `{manifest.ModelSha256}`",
             $"- Threshold: {manifest.ScoreThreshold}, class NMS IoU: {manifest.NmsIouThreshold}",
@@ -99,10 +109,11 @@ internal static class VisualEval
             markdown.Add($"| {v.GetProperty("id").GetString()} | {v.GetProperty("count").GetInt32()} | {v.GetProperty("elapsed_ms").GetDouble()} |");
         }
         markdown.Add("");
-        markdown.Add("Outputs include original PNGs, annotated BMPs, blackout previews, and full JSON candidate coordinates. Masking is an **automatic simulation**, not an approved privacy decision.");
+        markdown.Add("Reports include full JSON candidate coordinates. For externally sourced photos and copyrighted character art, source pixels and previews are intentionally excluded from the published artifact.");
+        markdown.Add("All automatic mask previews are **simulations**, not approved privacy decisions.");
         markdown.Add("Zero candidates on these synthetic images never proves the model will detect true events.");
         await File.WriteAllLinesAsync(Path.Combine(reportFolder, "README.md"), markdown);
-        Console.WriteLine($"VISUAL_EVAL_PASS: {cases.Length} synthetic images, {total} total candidate(s), JSON and previews saved.");
+        Console.WriteLine($"VISUAL_EVAL_PASS: {cases.Length} evaluated images, {total} total candidate(s); JSON and allowed previews saved.");
         return 0;
     }
 

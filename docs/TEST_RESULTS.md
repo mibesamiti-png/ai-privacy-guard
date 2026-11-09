@@ -61,3 +61,10 @@ Green CI is a real compiler/test/publish verification. It does **not** prove cor
 - Real pinned 320n ONNX download SHA verified and ONNX CPU inference executed twice on synthetic frames; MODEL_SMOKE_PASS in PR CI #42687318433.
 - Real-world detection performance, particularly brief nipple exposure or underwear seen under skirts, NOT TESTED.
 - No personal media or model weights are bundled with the public repository.
+
+## R6 external real-media cross-domain probe (2026-11-09)
+- [Windows CI #42694286982](https://github.com/mibesamiti-png/ai-privacy-guard/actions/runs/42694286982): actual NudeNet 320n ONNX inference PASS, all 7 downloads PASS.
+- 1 of 7 adult-character/real-fashion images yielded an AI candidate; fashion photo had `FEMALE_GENITALIA_COVERED`, score `0.665824`, at `(289,525,65,70)` in a 482x720px image.
+- 2D Yor and Ningguang and 3D Raiden and Ningguang, plus real clothed cosplay controls: all zero. These are NOT positive panty-shot images.
+- All third-party source image data removed before uploading results. Results include source links, SHA-256, JSON and abstract box-only diagrams.
+- Not a sensitivity/recall benchmark. See `docs/R6_REALMEDIA_EVAL_RESULTS.md`.
