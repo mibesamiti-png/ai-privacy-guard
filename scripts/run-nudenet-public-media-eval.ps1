@@ -14,9 +14,11 @@ try {
     }
     dotnet run --no-build --no-restore -c Release --project tests/PrivacyGuard.AI.Smoke/PrivacyGuard.AI.Smoke.csproj -- $target --visual-fixtures $destination "$destination/report"
     if ($LASTEXITCODE -ne 0) { throw "Real media ONNX evaluation failed with code $LASTEXITCODE" }
+    dotnet run --no-build --no-restore -c Release --project tests/PrivacyGuard.AI.Smoke/PrivacyGuard.AI.Smoke.csproj -- $target --threshold-sweep $destination "$destination/report"
+    if ($LASTEXITCODE -ne 0) { throw "ONNX threshold sweep failed with code $LASTEXITCODE" }
     python scripts/make_nudenet_eval_maps.py --root $destination
     if ($LASTEXITCODE -ne 0) { throw 'Box-only map generation failed' }
-    Write-Host 'NUDENET_REALMEDIA_EVAL_PASS: source images evaluated, metadata and abstract coordinate diagrams generated.'
+    Write-Host 'NUDENET_REALMEDIA_EVAL_PASS: adult apparel and cosplay source images plus threshold sweep evaluated; originals stripped.'
 }
 finally {
     # Do not redistribute copyright imagery or identifiable third-party people.

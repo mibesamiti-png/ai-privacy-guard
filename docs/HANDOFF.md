@@ -70,3 +70,12 @@
 - CI #42694286982: **7/7 public sources loaded, 1 total candidate**, `FEMALE_GENITALIA_COVERED` (confidence 0.665824) on an adult swimwear runway photo. 2D, 3D and cosplay clothed controls: 0 candidates.
 - Raw third-party image pixels deleted before publishing the GitHub artifact; report holds links/attribution/hashes, class boxes and geometry-only maps.
 - NO true under-skirt positive validation; see `docs/R6_REALMEDIA_EVAL_RESULTS.md`.
+
+## R6 adult underwear / cosplay / Genshin threshold debug
+- PR #13 adds reproducible on-runner real NudeNet inference on **19/19** adult fashion, lingerie, swimwear, convention cosplay, 2D Yor/Ningguang and 3D Raiden/Ningguang sources.
+- Windows CI #42707282951 **SUCCESS**, per-source fetch & ONNX sweep actually passed. 109/109 core tests and 7/7 OBS tests still passed.
+- At thresholds 0.10 / 0.25 / 0.40: respectively 5 / 2 / 1 images emitted candidates (6 / 2 / 1 boxes).
+- Among five lingerie-referenced images, any detections 2/5, 1/5, 0/5. **Not panty-shot recall**: no labeled positive under-skirt incident samples.
+- Lowering 0.25->0.10 also emitted a possible false positive `FEMALE_BREAST_EXPOSED` on a black dress photo; **do not auto-lower shipping threshold**.
+- No source person/game imagery in public artifact; source URLs and abstract boxes only. See `docs/R6_LINGERIE_FASHION_DEBUG_RESULTS.md`.
+- Next: build a dedicated annotated adult garment visibility dataset/second-stage classifier with positive/negative cases and explicit privacy-scene context.

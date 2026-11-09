@@ -44,3 +44,9 @@
 - Real NudeNet 320n ONNX downloaded with pinned SHA, loaded, and 2 synthetic CPU inferences PASS in GitHub Actions #42687318433. Real accuracy untested.
 - Model is not bundled; NudeNet is **not** a dedicated skirt-underwear visibility model. No empirical accuracy metrics, NOT safe for live protection.
 - See `docs/R6_NUDENET_MODEL.md`.
+
+## R6 clothing-domain sensitivity test
+- Real-image adult lingerie/swimwear/clothed control/2D/3D/cosplay **19/19 fetched and model-tested in CI #42707282951**.
+- Threshold sweep 0.10/0.25/0.40: source metadata and detections are reproducible. User model default 0.25 **unchanged** because lower threshold added a possible dressed-body false positive.
+- Specialized under-skirt/panty-visible detector: **NOT IMPLEMENTED**, no consenting adult positive ground-truth corpus; cannot claim real incident detection recall.
+- See `docs/R6_LINGERIE_FASHION_DEBUG_RESULTS.md`.

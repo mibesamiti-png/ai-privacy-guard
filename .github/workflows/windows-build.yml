@@ -111,12 +111,14 @@ jobs:
         if: always()
         uses: actions/upload-artifact@v4
         with:
-          name: R6-Adult-Fashion-Anime-Genshin-Model-Results
+          name: R6-Lingerie-Fashion-Cosplay-Threshold-Test
           path: |
             dist/nudenet-public-media-eval/fixtures.json
             dist/nudenet-public-media-eval/maps_index.json
             dist/nudenet-public-media-eval/geometry_maps/*
             dist/nudenet-public-media-eval/report/results.json
+            dist/nudenet-public-media-eval/report/threshold_sweep.json
+            dist/nudenet-public-media-eval/report/threshold_sweep.csv
             dist/nudenet-public-media-eval/report/README.md
           if-no-files-found: warn
           retention-days: 14
