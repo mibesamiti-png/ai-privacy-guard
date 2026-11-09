@@ -66,12 +66,23 @@ public sealed class DirectShowLiveCapture
                 ct.ThrowIfCancellationRequested();
                 var bytes = new byte[frameBytes];
                 int count = 0;
-                while (count < frameBytes)
+                // Do not leave camera read blocked indefinitely on unplug or
+                // driver hang. Recovery will restart the entire FFmpeg process.
+                using var frameTimeout = CancellationTokenSource.CreateLinkedTokenSource(ct);
+                frameTimeout.CancelAfter(TimeSpan.FromSeconds(3));
+                try
                 {
-                    int read = await process.StandardOutput.BaseStream.ReadAsync(
-                        bytes.AsMemory(count, frameBytes - count), ct);
-                    if (read == 0) break;
-                    count += read;
+                    while (count < frameBytes)
+                    {
+                        int read = await process.StandardOutput.BaseStream.ReadAsync(
+                            bytes.AsMemory(count, frameBytes - count), frameTimeout.Token);
+                        if (read == 0) break;
+                        count += read;
+                    }
+                }
+                catch (OperationCanceledException) when (!ct.IsCancellationRequested)
+                {
+                    throw new TimeoutException("No complete camera frame received for 3 seconds.");
                 }
 
                 if (count == 0) break;

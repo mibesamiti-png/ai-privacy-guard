@@ -727,6 +727,7 @@ public partial class MainWindow : Window
             _vm.Status = "推論が終了してから閉じてください（停止を要求しました）。";
             return;
         }
+        StopLiveBridgeProcess();
         _detector?.Dispose();
         _settings.MaskStyle = CurrentMaskStyle();
         _settings.Strength = (int)StrengthSlider.Value;

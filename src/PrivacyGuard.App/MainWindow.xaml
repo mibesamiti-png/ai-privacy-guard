@@ -379,6 +379,25 @@
                     <TextBlock Text="※ WPFの実機ビルド・動作テストはWindows環境で実施してください。" Margin="0,20,0,0"/>
                 </StackPanel>
             </TabItem>
+            <TabItem x:Name="LiveBridgeTab" Header="OBS連携（実験）">
+                <StackPanel Margin="22" MaxWidth="820" HorizontalAlignment="Left">
+                    <TextBlock FontWeight="SemiBold" FontSize="18"
+                               Text="OBS Browser Source — 合成映像で接続確認"/>
+                    <TextBlock Margin="0,8,0,12" Foreground="#FFD29B" TextWrapping="Wrap"
+                               Text="これは検証用機能です。露出検出モデルは同梱しておらず、実際の配信事故防止には使用できません。"/>
+                    <WrapPanel>
+                        <Button Content="合成映像デモを起動" Click="StartDemoLiveBridge_Click"/>
+                        <Button Content="OBSブリッジを停止" Click="StopLiveBridge_Click"/>
+                        <Button Content="OBS URLをコピー" Click="CopyObsBrowserUrl_Click"/>
+                    </WrapPanel>
+                    <TextBlock x:Name="LiveBridgeStatus" Text="停止中。開始前の出力は黒画面です。"
+                               Foreground="#AEE7E4" Margin="4,12,0,6" TextWrapping="Wrap"/>
+                    <TextBox x:Name="LiveBridgeUrl" IsReadOnly="True" Margin="4"
+                             Text="デモを起動するとOBS用URLを表示します。" />
+                    <TextBlock Margin="4,10,0,0" Foreground="#AEB7C7" TextWrapping="Wrap"
+                               Text="OBSで「ブラウザ」ソースを追加し、上のURLを指定してください。推奨サイズ：640×360。カメラ入力・音声同期の実験機能は別のLiveBridge.exeのコマンドラインで操作します。"/>
+                </StackPanel>
+            </TabItem>
         </TabControl>
     </DockPanel>
 </Window>

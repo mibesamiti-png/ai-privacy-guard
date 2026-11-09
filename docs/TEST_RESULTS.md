@@ -38,3 +38,10 @@ Green CI is a real compiler/test/publish verification. It does **not** prove cor
 - Main CI: https://github.com/mibesamiti-png/ai-privacy-guard/actions/runs/42674405361 (verify final conclusion).
 - Real DirectShow camera device, WPF UI coupling, and actual OBS desktop integration: **NOT TESTED**.
 - This build is **not appropriate for live-stream privacy protection**.
+
+## R5.2 tests to verify
+- New capture reconnect/backoff/monotonic/fault/cancellation synthetic xUnit tests: WRITTEN, NOT RUN as of branch authoring.
+- OBS audio offset validation/payload tests: WRITTEN, NOT RUN.
+- WPF experimental launcher and bridge bundled publish: SOURCE WRITTEN, CI PENDING.
+- Physical DirectShow camera reconnect, OBS renderer restart, manually measured A/V sync: NOT TESTED.
+- Not ready to prevent privacy incidents during live broadcasts.

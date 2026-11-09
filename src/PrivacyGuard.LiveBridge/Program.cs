@@ -34,6 +34,18 @@ internal static class Program
             int height = ReadInt(args, "--height", 360, 16, 1080);
             int fps = ReadInt(args, "--fps", 10, 1, 30);
             int port = ReadInt(args, "--port", 18731, 1024, 65535);
+            string? audioInput = ReadOption(args, "--obs-audio-input");
+            string? offsetText = ReadOption(args, "--obs-audio-offset-ms");
+            if ((audioInput is null) != (offsetText is null))
+                throw new ArgumentException("--obs-audio-input and --obs-audio-offset-ms must be used together.");
+            int? audioOffset = null;
+            if (audioInput is not null)
+            {
+                if (!int.TryParse(offsetText, out int requestedOffset))
+                    throw new ArgumentException("Invalid OBS audio offset in milliseconds.");
+                ObsAudioSyncProtocol.Validate(audioInput, requestedOffset);
+                audioOffset = requestedOffset;
+            }
 
             if (demo)
                 detector = new SyntheticDemoDetector();
@@ -58,20 +70,45 @@ internal static class Program
                     ? "NO VALIDATED DETECTOR: All camera frames stay BLACK."
                     : "UNVERIFIED DETECTOR: Do not rely on this to prevent accidental exposure.");
             Console.WriteLine("This bridge is a prototype. OBS/renderer failure may freeze the image.");
+            if (audioOffset is not null)
+            {
+                try
+                {
+                    await new ObsAudioSyncClient().SetInputOffsetAsync(audioInput!, audioOffset.Value,
+                        Environment.GetEnvironmentVariable("APG_OBS_WS_PASSWORD"), stop.Token);
+                    Console.WriteLine($"OBS audio input offset set to {audioOffset.Value} ms for {audioInput}.");
+                    Console.WriteLine("Audio offset is manually supplied; it is NOT auto-calibrated.");
+                }
+                catch (Exception ex) when (ex is not OutOfMemoryException)
+                {
+                    Console.Error.WriteLine("OBS audio offset unchanged: " + ex.GetType().Name +
+                        ". Check OBS WebSocket configuration and input name.");
+                }
+            }
             Console.WriteLine("Press Ctrl+C to exit.");
-            IAsyncEnumerable<LiveInputFrame> source = demo
-                ? SyntheticFrames(width, height, fps, stop.Token)
-                : new DirectShowLiveCapture().CaptureAsync(camera!, width, height, fps, stop.Token);
+            var recovery = new LiveCaptureRecovery(
+                token => demo
+                    ? SyntheticFrames(width, height, fps, token)
+                    : new DirectShowLiveCapture().CaptureAsync(camera!, width, height, fps, token),
+                gate, watchdog, watchdog.ForceBlackout,
+                status => Console.WriteLine($"Capture: {status.Phase} (retry {status.Attempt}) - {status.Detail}"));
             try
             {
-                await LiveFramePipeline.RunAsync(source, gate, watchdog, stop.Token);
+                await recovery.RunAsync(stop.Token);
+                // Keep the local output endpoint serving BLACK on terminal
+                // detector failure until the operator explicitly shuts down.
+                if (!stop.IsCancellationRequested)
+                {
+                    Console.WriteLine("Capture stopped; local OBS output remains BLACK. Press Ctrl+C.");
+                    try { await Task.Delay(Timeout.InfiniteTimeSpan, stop.Token); }
+                    catch (OperationCanceledException) { }
+                }
             }
             catch (OperationCanceledException) when (stop.IsCancellationRequested) { }
             catch (Exception ex)
             {
-                Console.Error.WriteLine("Camera processing stopped; output is black: " + ex.Message);
+                Console.Error.WriteLine("Capture unavailable; output is black: " + ex.GetType().Name);
                 watchdog.ForceBlackout();
-                Console.WriteLine("Press Ctrl+C to shut down the OBS bridge.");
                 try { await Task.Delay(Timeout.InfiniteTimeSpan, stop.Token); }
                 catch (OperationCanceledException) { }
             }
@@ -159,6 +196,9 @@ AIPrivacyGuard.LiveBridge — experimental OBS Browser Source
   --width 640 --height 360        Output dimensions
   --fps 10                        Camera/demo frame rate
   --port 18731                    Localhost Browser Source port
+  --obs-audio-input "Mic/Aux"      Optional OBS audio input to adjust
+  --obs-audio-offset-ms 350       Manual OBS audio sync offset in milliseconds
+                                  Password via APG_OBS_WS_PASSWORD environment variable
 
 DO NOT use this experimental implementation to guarantee privacy in live streams.
 """);
