@@ -21,3 +21,10 @@
 
 ### Interpret results carefully
 Green CI is a real compiler/test/publish verification. It does **not** prove correctness of untested WPF interaction, actual sensitive-content detection, or live stream safety.
+
+## R5.0 live safety core — verified PR CI (2026-11-10)
+- PR #3 merged as `a67133657f0a662dd04cd04bd543c71a31d26231`.
+- [GitHub Actions #42670038848](https://github.com/mibesamiti-png/ai-privacy-guard/actions/runs/42670038848): Windows build/publish PASS, C# xUnit **89 passed/0 failed**, Python/FFmpeg PASS, artifact upload PASS.
+- 11 new synthetic live-gate tests, including blackout on missing detector, timeout, exception, malformed detections, stale/concurrent frames and disable-during-inference.
+- **NOT RUN**: real DirectShow camera device smoke, interactive UI, OBS output, audio sync, exposure detector accuracy and downstream heartbeat watchdog.
+- main push [#42670458131](https://github.com/mibesamiti-png/ai-privacy-guard/actions/runs/42670458131): conclusion must be checked separately.
