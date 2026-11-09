@@ -6,6 +6,8 @@ Privacy-conscious offline image, video and experimental live-OBS content review 
 
 **R8.0 architecture update (2026-11-10):** Independent full-frame multi-model proposal analysis was merged through [PR #16](https://github.com/mibesamiti-png/ai-privacy-guard/pull/16) and passed [Windows CI #42715218212](https://github.com/mibesamiti-png/ai-privacy-guard/actions/runs/42715218212) (129 Core, 7 OBS, 21 Python tests). This is an *offline Core API only*: no new trained garment-specialist model, no WPF/OBS integration, no verified detection recall. The Windows app remains at R7 user-facing capability. See [R8 design](docs/R8_MULTIMODEL_PROPOSALS.md).
 
+**R8.1 model research (no Windows feature change):** An opt-in Python research runner successfully loaded and inferred with official [Grounding DINO Tiny](https://huggingface.co/IDEA-Research/grounding-dino-tiny) and [OWLv2](https://huggingface.co/google/owlv2-base-patch16-ensemble) checkpoints using **one synthetic non-human garment silhouette**. The first returned 11 overlapping/prompt-dependent *proposals* in 29.8s CPU inference; the second returned zero proposals in 53.3s. Neither result establishes a correct garment type, a valid under-skirt detector, or live suitability. [Windows CI](https://github.com/mibesamiti-png/ai-privacy-guard/actions/runs/42721585795) and [independent real-model CI](https://github.com/mibesamiti-png/ai-privacy-guard/actions/runs/42721586938) passed. [Experiment documentation](docs/R8_1_ZERO_SHOT_COMPARISON.md).
+
 ## Supported functions
 
 - Open image; manually mark, review and apply black/blur/pixel masks.

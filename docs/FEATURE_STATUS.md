@@ -61,3 +61,8 @@
 - `MultiModelProposalAnalyzer` is merged to Core via PR #16. It preserves separate model ID, category, confidence and rectangle; does not rely on NudeNet's ROIs, deduplicate across different models, or automatically approve/mask/export.
 - **Verified on PR Windows CI #42715218212**: 129/129 Core xUnit, 7/7 OBS xUnit and 21 Python/FFmpeg tests. New synthetic tests cover empty primary vs specialist proposals, provenance, cancellation, invalid output and failure handling.
 - **NOT IMPLEMENTED**: a real specialist garment model, image/video/OBS UI integration, genuine positive recall measurement, live stream protection. A completed inference does not imply a safe image. See `docs/R8_MULTIMODEL_PROPOSALS.md`.
+
+## R8.1 experimental standalone zero-shot garment research (2026-11-10)
+- **Verified model execution** in research workflow #42721586938: both Grounding DINO Tiny and OWLv2 loaded and inferred on one 256×256 non-human synthetic garment silhouette. 11 vs 0 **candidate boxes**, uncalibrated, overlapping and no independent ground truth. About 29.8s vs 53.3s CPU inference, respectively.
+- **Verified ordinary Windows PR workflow #42721585795**: 129 Core, 7 OBS, 30 Python integration tests PASS; app/bridge still publish. Added 9 stdlib-only Python comparison tests.
+- **Not yet integrated or measured**: a validated specialist trained on any consenting adult positive examples, still-image/3D/anime recall, prompt calibration, model snapshot immutability, UI, or live latency/safety. R8.1 is a separate Python research tool only; Windows WPF remains R7 user-facing. See `docs/R8_1_ZERO_SHOT_COMPARISON.md`.
