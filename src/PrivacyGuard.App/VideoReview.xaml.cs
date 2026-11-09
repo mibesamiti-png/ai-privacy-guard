@@ -198,7 +198,22 @@ public partial class MainWindow
             VideoStatus("全動画AI走査には互換ONNXモデルが必要です。画像タブからモデル定義JSONを読み込んでください。");
             return;
         }
-        int rate = VideoScanRateCombo.SelectedIndex switch { 0 => 1, 2 => 4, _ => 2 };
+        int rate = VideoScanRateCombo.SelectedIndex switch
+        {
+            0 => 1, 2 => 4, 3 => 8, 4 => 12, _ => 2
+        };
+        // Reject impossible full-file scans before touching current review state.
+        VideoScanBudget budget;
+        try
+        {
+            budget = VideoScanPlanner.Plan(_videoMetadata.DurationUs, rate,
+                _videoMetadata.EstimatedFramesPerSecond);
+        }
+        catch (Exception ex) when (ex is ArgumentException or NotSupportedException)
+        {
+            VideoStatus("走査設定を見直してください: " + ex.Message);
+            return;
+        }
         string source = _videoPath;
         var metadata = _videoMetadata;
         var detector = _detector;
@@ -216,7 +231,10 @@ public partial class MainWindow
         int frames = 0;
         try
         {
-            VideoStatus($"全動画のサンプル走査開始: {rate}fps / {sourceModel}。サンプル間は検査しません。");
+            VideoStatus($"動画走査開始: {rate}fps / 約{budget.EstimatedSamples:N0}標本 / {sourceModel}。" +
+                $"サンプル間の最大公称間隔は約{budget.NominalMaxGapUs / 1000d:0.#}ms。" +
+                (budget.SourceFrameRateBelowScanRate
+                    ? " 元動画の推定fpsが低いため、重複フレームが発生します。" : ""));
             await foreach (var sample in _videoService.StreamSamplesAsync(source, metadata, rate, token))
             {
                 token.ThrowIfCancellationRequested();
@@ -270,7 +288,8 @@ public partial class MainWindow
             VideoScanProgress.Value = 100;
             VideoDrawOverlay();
             VideoStatus($"サンプル走査完了: {frames:N0}枚 / 生検出{collected.Count:N0}件 / 要確認{newCandidates.Count:N0}イベント。" +
-                "未確認のまま書き出しません。サンプル間の露出・動きへの追従は保証されません。");
+                $"未確認のまま書き出しません。{rate}fpsでもサンプル間の短い場面・動きへの追従は保証されません。" +
+                (budget.SourceFrameRateBelowScanRate ? " 元動画のfpsを超える検査密度にはなりません。" : ""));
         }
         catch (OperationCanceledException)
         {
