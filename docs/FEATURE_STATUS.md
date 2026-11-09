@@ -50,3 +50,9 @@
 - Threshold sweep 0.10/0.25/0.40: source metadata and detections are reproducible. User model default 0.25 **unchanged** because lower threshold added a possible dressed-body false positive.
 - Specialized under-skirt/panty-visible detector: **NOT IMPLEMENTED**, no consenting adult positive ground-truth corpus; cannot claim real incident detection recall.
 - See `docs/R6_LINGERIE_FASHION_DEBUG_RESULTS.md`.
+
+## R7 high-density offline video scan (PR/CI pending)
+- UI and FFmpeg streaming add 8/12fps to original 1/2/4fps rates; default remains 2fps.
+- New `VideoScanPlanner` preflight caps 30,000 samples, shows nominal blind interval and warns on duplicate sampling above source fps.
+- Synthetic 133ms pulse FFmpeg test and C# planning xUnit tests added; results pending Windows CI.
+- No true complete-frame safety guarantee, no validated under-skirt-specific model, not for live broadcasting.
