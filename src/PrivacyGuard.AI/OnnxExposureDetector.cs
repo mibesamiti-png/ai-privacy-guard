@@ -35,7 +35,18 @@ public sealed class OnnxExposureDetector : IExposureDetector
                 !output.IsTensor || output.ElementType != typeof(float))
                 throw new InvalidDataException("Model output name/type is not float32 tensor.");
             int[] outputShape = output.Dimensions;
-            if (!((outputShape.Length == 2 && (outputShape[1] == 6 || outputShape[1] == -1)) ||
+            if (manifest.OutputFormat == "nudenet_yolov8_18class")
+            {
+                // 320n: [1,22,2100]. A transposed [1,2100,22]
+                // export is also supported. 22 = 4 xywh + 18 classes.
+                bool shapeOk = outputShape.Length == 3 &&
+                    (outputShape[0] is 1 or -1) &&
+                    ((outputShape[1] is 22 or -1) ||
+                     (outputShape[2] is 22 or -1));
+                if (!shapeOk)
+                    throw new InvalidDataException("NudeNet output must be [1,22,N] or [1,N,22].");
+            }
+            else if (!((outputShape.Length == 2 && (outputShape[1] == 6 || outputShape[1] == -1)) ||
                   (outputShape.Length == 3 && (outputShape[0] is 1 or -1) &&
                    (outputShape[2] is 6 or -1))))
                 throw new InvalidDataException("Unsupported output shape; expected [N,6] or [1,N,6].");
@@ -64,8 +75,11 @@ public sealed class OnnxExposureDetector : IExposureDetector
             var output = outputs.FirstOrDefault(x => x.Name == _manifest.OutputName)
                 ?? throw new InvalidDataException("Named ONNX output was not returned.");
             var tensor = output.AsTensor<float>();
-            return ModelTensorProcessor.DecodeSixColumns(
-                tensor.ToArray(), tensor.Dimensions.ToArray(), _manifest, transform: preprocessed.Transform);
+            return _manifest.OutputFormat == "nudenet_yolov8_18class"
+                ? NudeNetYoloDecoder.Decode(tensor.ToArray(), tensor.Dimensions.ToArray(),
+                    _manifest, preprocessed.Transform)
+                : ModelTensorProcessor.DecodeSixColumns(tensor.ToArray(),
+                    tensor.Dimensions.ToArray(), _manifest, transform: preprocessed.Transform);
         }, cancellationToken);
     }
 
