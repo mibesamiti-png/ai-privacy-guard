@@ -73,6 +73,34 @@ jobs:
             "Upstream model download/inference NOT verified. This does not certify exposure detection." >> $env:GITHUB_STEP_SUMMARY
           }
 
+      - name: Run real NudeNet visual fixture evaluation
+        id: nudenet_visual
+        continue-on-error: true
+        shell: pwsh
+        run: ./scripts/run-nudenet-visual-eval.ps1
+
+      - name: Publish visual fixture evaluation archive
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: R6-NudeNet-Visual-Test-Data-And-Results
+          path: |
+            dist/nudenet-visual-eval/inputs/*.png
+            dist/nudenet-visual-eval/fixtures.json
+            dist/nudenet-visual-eval/report/*
+          if-no-files-found: warn
+          retention-days: 14
+
+      - name: Record visual fixture evaluation result
+        if: always()
+        shell: pwsh
+        run: |
+          $outcome = '${{ steps.nudenet_visual.outcome }}'
+          "NudeNet model visual fixture result: $outcome" >> $env:GITHUB_STEP_SUMMARY
+          if ($outcome -ne 'success') {
+            "Visual sample inference NOT VERIFIED; examine the step logs before using its archive." >> $env:GITHUB_STEP_SUMMARY
+          }
+
       - name: Publish Windows x64 app
         run: dotnet publish src/PrivacyGuard.App/PrivacyGuard.App.csproj -c Release -r win-x64 --self-contained true -p:PublishSingleFile=false -o dist/win-x64
 
