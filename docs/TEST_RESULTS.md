@@ -39,9 +39,15 @@ Green CI is a real compiler/test/publish verification. It does **not** prove cor
 - Real DirectShow camera device, WPF UI coupling, and actual OBS desktop integration: **NOT TESTED**.
 - This build is **not appropriate for live-stream privacy protection**.
 
-## R5.2 tests to verify
-- New capture reconnect/backoff/monotonic/fault/cancellation synthetic xUnit tests: WRITTEN, NOT RUN as of branch authoring.
-- OBS audio offset validation/payload tests: WRITTEN, NOT RUN.
-- WPF experimental launcher and bridge bundled publish: SOURCE WRITTEN, CI PENDING.
+## R5.2 verified PR CI (2026-11-10)
+- PR #7 success: https://github.com/mibesamiti-png/ai-privacy-guard/actions/runs/42677140187
+- Main merge commit: `114003647c5b24c38803602234fab48695cb390d`.
+- Main CI: https://github.com/mibesamiti-png/ai-privacy-guard/actions/runs/42677559049 (check conclusion separately).
+- WPF/LiveBridge publish PASS; WPF normal artifact includes the live-bridge subfolder.
+- New manual OBS audio offset protocol and synthetic capture reconnect tests have passed; real capture and OBS still require local tests.
+
+- New capture reconnect/backoff/monotonic/fault/cancellation synthetic xUnit tests: **PASSED** in 103/103 core xUnit tests on Windows CI.
+- OBS audio offset validation/payload tests: **PASSED** in 7/7 OBS transport/audio protocol xUnit tests.
+- WPF experimental launcher and bridge bundled publish: Windows compile and artifact publish **PASSED**; actual WPF GUI run NOT TESTED.
 - Physical DirectShow camera reconnect, OBS renderer restart, manually measured A/V sync: NOT TESTED.
 - Not ready to prevent privacy incidents during live broadcasts.

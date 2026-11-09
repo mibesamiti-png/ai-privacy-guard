@@ -58,3 +58,9 @@ This adjusts OBS's named audio input by +350 ms. Allowed range is -950 to 20000 
 2. Add precise end-to-end video/audio latency measurement and optional calibration UI; avoid blindly applying offsets.
 3. Device selection, process-recovery behavior on OBS renderer crashes, output heartbeat independent of page scripts.
 4. Evaluate a suitable exposure detector on approved labeled data and fail-safe operating limits before attempting real live use.
+
+## Verified R5.2 PR build / merge (2026-11-10)
+- GitHub PR #7 merged to main as `114003647c5b24c38803602234fab48695cb390d`.
+- [PR Windows CI #42677140187](https://github.com/mibesamiti-png/ai-privacy-guard/actions/runs/42677140187) passed: **103/103** core xUnit and **7/7** OBS HTTP/audio protocol tests; main WPF and LiveBridge EXEs compiled, published and artifact-uploaded.
+- [Integrated main CI #42677559049](https://github.com/mibesamiti-png/ai-privacy-guard/actions/runs/42677559049) must be checked separately before claiming main PASS.
+- Not validated: real DirectShow replugging, OBS desktop renderer recovery, A/V measurement/calibration, exposure-model accuracy.
