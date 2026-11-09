@@ -1,6 +1,7 @@
 # R4.3 — First passing Windows CI (2026-11-09)
 
 ## Verified result
+- [Passing main workflow #42666438651](https://github.com/mibesamiti-png/ai-privacy-guard/actions/runs/42666438651) on squash commit `d77d7c2080167c7bd662713064cb8fb38de3cca5`; all steps green, [main artifact](https://github.com/mibesamiti-png/ai-privacy-guard/actions/runs/42666438651/artifacts/13696203027) uploaded.
 - [Passing pull-request run #42666001582](https://github.com/mibesamiti-png/ai-privacy-guard/actions/runs/42666001582) on commit `09baf07226928214e597929930a58618dee635b6`.
 - Windows x64 / .NET 10: restore, build, publish, executable existence check, and artifact upload passed.
 - C# xUnit: **78 passed, 0 failed**.
