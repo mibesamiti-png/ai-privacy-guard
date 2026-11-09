@@ -76,6 +76,52 @@ SOURCES = [
         allowed_to_redistribute=False,
         expected="Fully clothed 3D character, negative/control"),
 ]
+# Wikimedia Commons files from professional adult model photo sessions and
+# apparel photo shoots. Temporary local inference only; not republished.
+# Reference labels describe a garment in the photograph, NOT an accidental
+# exposure incident, and must not be used as actual exposed-body ground truth.
+from urllib.parse import quote
+
+COMMONS_PROBES = [
+    ("17_jackie_black_lingerie","Jackie Martinez in black lingerie.jpg","underwear_garment_reference","lingerie_visible","Mark J Sebastian, CC BY-SA 2.0"),
+    ("18_jackie_white_lingerie","Jackie Martinez in white lingerie.jpg","underwear_garment_reference","lingerie_visible","Mark J Sebastian, CC BY-SA 2.0"),
+    ("19_jackie_bw_lingerie","Jackie Martinez in B&W lingerie.jpg","underwear_garment_reference","lingerie_visible","Mark J Sebastian, CC BY-SA 2.0"),
+    ("20_dare_lingerie_0194","202008 Dare To Desire Lingerie 0194 .jpg","underwear_garment_reference","lingerie_visible","DareToDesire, CC BY-SA 4.0"),
+    ("21_dare_lingerie_0211","202008 Dare To Desire Lingerie 0211 .jpg","underwear_garment_reference","lingerie_visible","DareToDesire, CC BY-SA 4.0"),
+    ("22_jackie_black_bikini","Jackie Martinez in a black bikini.jpg","adult_swimwear_reference","swimwear_visible","Mark J Sebastian, CC BY-SA 2.0"),
+    ("23_jackie_blue_bikini","Jackie Martinez in blue bikini.jpg","adult_swimwear_reference","swimwear_visible","Mark J Sebastian, CC BY-SA 2.0"),
+    ("24_jackie_leopard_bikini","Jackie Martinez in leopard bikini.jpg","adult_swimwear_reference","swimwear_visible","Mark J Sebastian, CC BY-SA 2.0"),
+    ("25_jackie_black_dress","Jackie Martinez in black dress.jpg","adult_clothed_control","fully_clothed","Mark J Sebastian, CC BY-SA 2.0"),
+    ("26_jackie_another_dress","Jackie Martinez in a black dress.jpg","adult_clothed_control","fully_clothed","Mark J Sebastian, CC BY-SA 2.0"),
+    ("27_jackie_white_clothing","Jackie Martinez in white.jpg","adult_clothed_control","fully_clothed","Mark J Sebastian, CC BY-SA 2.0"),
+]
+for ident, filename, group, visual_reference, credit in COMMONS_PROBES:
+    slug=quote(filename.replace(" ","_"),safe="")
+    SOURCES.append(dict(
+        id=ident,group=group,title=filename,
+        url="https://commons.wikimedia.org/wiki/Special:FilePath/"+slug+"?width=720",
+        source_page="https://commons.wikimedia.org/wiki/File:"+slug,
+        license=credit+"; personality rights remain; ephemeral evaluation only",
+        allowed_to_redistribute=False,
+        expected="Published professional adult modeling reference, not accidental exposure",
+        visual_reference=visual_reference,
+        true_upskirt_positive=False
+    ))
+
+# Japanese press event image, adult professional bunny costume as extra control.
+SOURCES.append(dict(
+    id="28_comiket_c105_adult_bunny",
+    group="japan_comiket_adult_cosplay",
+    title="Adult professional bunny cosplay at C105; Japanese published report",
+    url="https://pub-6e6736ba37d64d4aa5ae63b074884090.r2.dev/2024/12/VgRgkcrs-000.jpg",
+    source_page="https://www.wws-channel.com/cosplayer/537313.html",
+    license="Copyright WWS Channel/photographer, no republishing",
+    allowed_to_redistribute=False,
+    expected="Convention costume photograph, not a known positive example",
+    visual_reference="clothed_costume_control",
+    true_upskirt_positive=False
+))
+
 def main(out: Path):
     out.mkdir(parents=True, exist_ok=True)
     inputs = out / "inputs"
@@ -110,6 +156,8 @@ def main(out: Path):
                 "download_url":src["url"],
                 "allowed_to_redistribute":src["allowed_to_redistribute"],
                 "expected_context":src["expected"],
+                "visual_reference":src.get("visual_reference","not_labeled"),
+                "visual_label_evidence":"published description / filename, NOT human-verified anatomical exposure boxes",
                 "true_upskirt_positive":False
             }
             entries.append(entry)
@@ -120,7 +168,7 @@ def main(out: Path):
             print("FETCH_FAILED",src["id"],type(e).__name__,str(e)[:100])
     data = {
         "schema_version":1,
-        "purpose":"Evaluate actual ONNX on real adult runway/cosplay, 2D adult anime, 3D Genshin images; NOT an upskirt detection ground truth",
+        "purpose":"Compare pinned NudeNet ONNX across licensed adult lingerie, swimsuit, clothed fashion, Comiket cosplay, adult anime and 3D Genshin; NO under-skirt-positive ground truth",
         "privacy_policy":"No covert images; no minors; originals kept temporarily in CI, then deleted, not redistributed",
         "evaluated_count":len(entries),
         "unavailable_count":len(missing),
