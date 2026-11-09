@@ -35,6 +35,7 @@
                         <WrapPanel>
                             <Button Content="画像を開く" Click="OpenImage_Click"/>
                             <Button Content="模擬検出を追加" Click="AddMock_Click"/>
+                            <Button x:Name="InstallRecommendedModelButton" Content="露出検出AIを導入（NudeNet）" Click="InstallRecommendedModel_Click"/>
                             <Button x:Name="LoadModelButton" Content="AIモデル定義を開く" Click="LoadModel_Click"/>
                             <Button x:Name="DetectButton" Content="AIで候補を抽出" Click="DetectImage_Click"/>
                             <Button x:Name="ModelProbeButton" Content="モデル接続診断" Click="ModelProbe_Click" IsEnabled="False"/>
