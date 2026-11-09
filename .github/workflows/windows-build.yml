@@ -101,6 +101,36 @@ jobs:
             "Visual sample inference NOT VERIFIED; examine the step logs before using its archive." >> $env:GITHUB_STEP_SUMMARY
           }
 
+      - name: Run adult fashion, 2D anime and Genshin 3D external-media inference
+        id: realmedia_eval
+        continue-on-error: true
+        shell: pwsh
+        run: ./scripts/run-nudenet-public-media-eval.ps1
+
+      - name: Upload external-media metadata and source-free geometry diagrams
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: R6-Adult-Fashion-Anime-Genshin-Model-Results
+          path: |
+            dist/nudenet-public-media-eval/fixtures.json
+            dist/nudenet-public-media-eval/maps_index.json
+            dist/nudenet-public-media-eval/geometry_maps/*
+            dist/nudenet-public-media-eval/report/results.json
+            dist/nudenet-public-media-eval/report/README.md
+          if-no-files-found: warn
+          retention-days: 14
+
+      - name: Report cross-domain AI evaluation outcome
+        if: always()
+        shell: pwsh
+        run: |
+          $status = '${{ steps.realmedia_eval.outcome }}'
+          "External adult media/2D/Genshin eval: $status" >> $env:GITHUB_STEP_SUMMARY
+          if ($status -ne 'success') {
+            "External image evaluation NOT VERIFIED; inspect logs and sources." >> $env:GITHUB_STEP_SUMMARY
+          }
+
       - name: Publish Windows x64 app
         run: dotnet publish src/PrivacyGuard.App/PrivacyGuard.App.csproj -c Release -r win-x64 --self-contained true -p:PublishSingleFile=false -o dist/win-x64
 
