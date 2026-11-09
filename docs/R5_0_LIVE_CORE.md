@@ -6,7 +6,7 @@ This round adds **headless primitives**, not a finished or usable live broadcast
 - `LiveSafetyGate`: experimental per-frame detection and masking with **opaque black frames** when disarmed, missing a detector, timed out, invalid output, stale/busy frame, cancellation, or detector exception.
 - `LiveFramePipeline`: routes frames from input to a sink **only after** processing them through the gate.
 - `DirectShowLiveCapture`: reads camera video on Windows through FFmpeg DirectShow into bounded 16–1920 × 16–1080 BGRA frames, with cancellation and child process cleanup.
-- Added 11 synthetic xUnit tests. CI will verify compile and test results on a Windows runner.
+- Added 11 synthetic xUnit tests. GitHub Actions run #42670038848 passed with **89/89 C# tests**, Windows build and publish, and artifact upload. Real camera device and WPF UI wiring remain untested.
 
 ## Safety model
 - **Defaults to disarmed**, including when no model is configured. A deliberate `EnableExperimentalProcessing()` call is required.
@@ -29,5 +29,8 @@ This round adds **headless primitives**, not a finished or usable live broadcast
 
 ## CI and verification
 - GitHub PR branch: `feature/r5-live-safety-core`.
-- This document describes code intent; mark CI/Windows smoke **PASS** only after checking actual workflow jobs and logs.
+- Verified green PR CI: https://github.com/mibesamiti-png/ai-privacy-guard/actions/runs/42670038848; all 89 C# tests passed and the Windows publish artifact was uploaded.
+- Merged as main commit `a67133657f0a662dd04cd04bd543c71a31d26231`.
+- Main push CI: https://github.com/mibesamiti-png/ai-privacy-guard/actions/runs/42670458131 (check its latest conclusion before claiming success).
+- Real camera capture and interactive WPF/OBS integration remain **NOT TESTED**.
 - No private footage, thumbnails or personal data should be committed to this public repository.
