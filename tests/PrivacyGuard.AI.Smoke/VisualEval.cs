@@ -113,7 +113,7 @@ internal static class VisualEval
         markdown.Add("All automatic mask previews are **simulations**, not approved privacy decisions.");
         markdown.Add("Zero candidates on these synthetic images never proves the model will detect true events.");
         await File.WriteAllLinesAsync(Path.Combine(reportFolder, "README.md"), markdown);
-        Console.WriteLine($"VISUAL_EVAL_PASS: {cases.Length} synthetic images, {total} total candidate(s), JSON and previews saved.");
+        Console.WriteLine($"VISUAL_EVAL_PASS: {cases.Length} evaluated images, {total} total candidate(s); JSON and allowed previews saved.");
         return 0;
     }
 
