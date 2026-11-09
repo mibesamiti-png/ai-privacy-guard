@@ -36,15 +36,15 @@ public sealed class LocalObsBrowserSource : IAsyncDisposable
         string prefix = "/" + _token;
         app.MapGet(prefix + "/", (HttpContext ctx) =>
         {
-            ctx.Response.Headers.CacheControl = "no-store, no-cache, must-revalidate";
-            ctx.Response.Headers.XContentTypeOptions = "nosniff";
+            ctx.Response.Headers["Cache-Control"] = "no-store, no-cache, must-revalidate";
+            ctx.Response.Headers["X-Content-Type-Options"] = "nosniff";
             return Results.Content(BuildPage(_watchdog.Width, _watchdog.Height),
                 "text/html; charset=utf-8");
         });
         app.MapGet(prefix + "/frame.bmp", (HttpContext ctx) =>
         {
-            ctx.Response.Headers.CacheControl = "no-store, no-cache, must-revalidate";
-            ctx.Response.Headers.XContentTypeOptions = "nosniff";
+            ctx.Response.Headers["Cache-Control"] = "no-store, no-cache, must-revalidate";
+            ctx.Response.Headers["X-Content-Type-Options"] = "nosniff";
             // Snapshot blackouts when processing stalls, even if input stopped.
             return Results.File(BmpFrameEncoder.Encode(_watchdog.Snapshot()), "image/bmp");
         });
