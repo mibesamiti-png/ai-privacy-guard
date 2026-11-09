@@ -23,6 +23,14 @@ internal static class Program
             bool demo = args.Contains("--demo", StringComparer.OrdinalIgnoreCase);
             string? camera = ReadOption(args, "--camera");
             string? manifestPath = ReadOption(args, "--manifest");
+            bool useInstalled = args.Contains("--use-installed-nudenet",
+                StringComparer.OrdinalIgnoreCase);
+            if (useInstalled && manifestPath is not null)
+                throw new ArgumentException("Choose either --manifest or --use-installed-nudenet.");
+            if (useInstalled)
+                manifestPath = Path.Combine(
+                    Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData),
+                    "AIPrivacyGuard", "models", "nudenet320", "nudenet320.manifest.json");
             bool allowUnverified = args.Contains("--experimental-unverified-model", StringComparer.OrdinalIgnoreCase);
             if (demo == (camera is not null))
                 throw new ArgumentException("Specify exactly one of --demo or --camera NAME.");
@@ -192,6 +200,7 @@ AIPrivacyGuard.LiveBridge — experimental OBS Browser Source
   --demo                          Synthetic frames; does not use a camera
   --camera "Device name"          Windows FFmpeg DirectShow camera (BLACK without model)
   --manifest "path.json"          Compatible ONNX model manifest, camera mode only
+  --use-installed-nudenet        Use locally installed 320n from image tab (camera mode)
   --experimental-unverified-model Explicitly allow unverified detector output
   --width 640 --height 360        Output dimensions
   --fps 10                        Camera/demo frame rate

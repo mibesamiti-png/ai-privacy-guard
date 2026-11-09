@@ -57,6 +57,22 @@ jobs:
       - name: Run live OBS bridge integration tests
         run: dotnet test tests/PrivacyGuard.LiveObs.Tests/PrivacyGuard.LiveObs.Tests.csproj -c Release --no-build --no-restore
 
+      - name: Optional third-party NudeNet real ONNX inference smoke
+        id: nudenet_smoke
+        continue-on-error: true
+        shell: pwsh
+        run: ./scripts/smoke-nudenet.ps1
+
+      - name: Report NudeNet smoke result
+        if: always()
+        shell: pwsh
+        run: |
+          $status = '${{ steps.nudenet_smoke.outcome }}'
+          "NudeNet external ONNX smoke: $status" >> $env:GITHUB_STEP_SUMMARY
+          if ($status -ne 'success') {
+            "Upstream model download/inference NOT verified. This does not certify exposure detection." >> $env:GITHUB_STEP_SUMMARY
+          }
+
       - name: Publish Windows x64 app
         run: dotnet publish src/PrivacyGuard.App/PrivacyGuard.App.csproj -c Release -r win-x64 --self-contained true -p:PublishSingleFile=false -o dist/win-x64
 
@@ -86,7 +102,7 @@ jobs:
       - name: Upload app build artifact
         uses: actions/upload-artifact@v4
         with:
-          name: AIPrivacyGuard-R5.2-Windows-x64
+          name: AIPrivacyGuard-R6-Windows-x64
           path: dist/win-x64/
           if-no-files-found: error
           retention-days: 14
@@ -94,7 +110,7 @@ jobs:
       - name: Upload experimental OBS bridge artifact
         uses: actions/upload-artifact@v4
         with:
-          name: AIPrivacyGuard-R5.2-LiveBridge-Windows-x64
+          name: AIPrivacyGuard-R6-LiveBridge-Windows-x64
           path: dist/live-bridge/
           if-no-files-found: error
           retention-days: 14

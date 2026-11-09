@@ -51,3 +51,9 @@ Green CI is a real compiler/test/publish verification. It does **not** prove cor
 - WPF experimental launcher and bridge bundled publish: Windows compile and artifact publish **PASSED**; actual WPF GUI run NOT TESTED.
 - Physical DirectShow camera reconnect, OBS renderer restart, manually measured A/V sync: NOT TESTED.
 - Not ready to prevent privacy incidents during live broadcasts.
+
+## R6 model integration — unverified until CI
+- New YOLOv8 raw-head unit tests and source coordinate geometry tests added; CI result pending.
+- Optional real 320n ONNX inference smoke added. Observe actual GitHub job step outcome; do not infer from overall CI green.
+- Real-world detection performance, particularly brief nipple exposure or underwear seen under skirts, NOT TESTED.
+- No personal media or model weights are bundled with the public repository.

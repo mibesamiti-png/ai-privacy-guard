@@ -56,3 +56,11 @@
 - CI now bundles independent LiveBridge in normal Windows artifact. Both executables published and WPF compiled; 103/103 core C# tests and 7/7 OBS transport tests PASSED on GitHub Windows CI #42677140187.
 - Integrated main CI: https://github.com/mibesamiti-png/ai-privacy-guard/actions/runs/42677559049 (verify final status before claiming success).
 - Details: `docs/R5_2_RECOVERY_AUDIO.md`. All real hardware/OBS testing still requires local Windows.
+
+## R6 external NudeNet AI integration (working branch)
+- Branch: `feature/r6-nudenet-model-integration` (PR CI pending; do not merge before checking it).
+- New NudeNet YOLOv8 18-class raw output decoder, 320n-specific zero-square preprocessing, manifest support, pinned URL/hash and local installer.
+- Minimal GUI button in Image tab; installed model auto-loads offline and powers existing image/video/batch inference.
+- Optional real ONNX synthetic smoke runs only on CI runner, downloads weights into TEMP, deletes them, and never places them in build artifacts. It is continue-on-error; inspect result separately.
+- Next: validate CI compile/tests; review actual ONNX smoke; fix bugs; merge and verify main CI; real exposure recall still unevaluated.
+- Model weights are NOT committed. Read `docs/R6_NUDENET_MODEL.md` and note AGPL/relicensing ambiguity before redistribution.

@@ -35,6 +35,8 @@ public static class ModelPreprocessing
 {
     public const string StretchNearest = "stretch_nearest";
     public const string LetterboxBilinear = "letterbox_bilinear";
+    // NudeNet pads right and bottom with zero before OpenCV's linear resize.
+    public const string NudeNetSquare = "nudenet_square";
 
     /// <summary>
     /// Produces RGB float32 NCHW and source-image geometry. Letterbox uses 114/255
@@ -44,9 +46,12 @@ public static class ModelPreprocessing
     {
         if (width < 1 || height < 1 || (long)width * height > 2048L * 2048)
             throw new ArgumentOutOfRangeException(nameof(width));
-        if (mode is not (StretchNearest or LetterboxBilinear))
+        if (mode is not (StretchNearest or LetterboxBilinear or NudeNetSquare))
             throw new InvalidDataException("Unknown preprocessing mode.");
 
+        if (mode == NudeNetSquare && width != height)
+            throw new InvalidDataException("NudeNet requires a square input tensor.");
+        int paddedSide = Math.Max(image.Width, image.Height);
         int resizedWidth = width, resizedHeight = height, offsetX = 0, offsetY = 0;
         if (mode == LetterboxBilinear)
         {
@@ -56,8 +61,11 @@ public static class ModelPreprocessing
             offsetX = (width - resizedWidth) / 2;
             offsetY = (height - resizedHeight) / 2;
         }
-        var mapping = new ModelInputTransform(image.Width, image.Height, width, height,
-            resizedWidth / (double)image.Width, resizedHeight / (double)image.Height, offsetX, offsetY);
+        var mapping = mode == NudeNetSquare
+            ? new ModelInputTransform(image.Width, image.Height, width, height,
+                width / (double)paddedSide, height / (double)paddedSide, 0, 0)
+            : new ModelInputTransform(image.Width, image.Height, width, height,
+                resizedWidth / (double)image.Width, resizedHeight / (double)image.Height, offsetX, offsetY);
         int plane = checked(width * height);
         float[] rgb = new float[checked(plane * 3)];
         if (mode == LetterboxBilinear)
@@ -67,6 +75,26 @@ public static class ModelPreprocessing
         for (int x = 0; x < resizedWidth; x++)
         {
             int dest = (y + offsetY) * width + (x + offsetX);
+            if (mode == NudeNetSquare)
+            {
+                // Linear resize of a zero-padded square, matching the NudeNet
+                // OpenCV wrapper. RGB NCHW and [0,1] values.
+                double fx = (x + 0.5) * paddedSide / (double)width - 0.5;
+                double fy = (y + 0.5) * paddedSide / (double)height - 0.5;
+                int squareX0 = (int)Math.Floor(fx), squareY0 = (int)Math.Floor(fy);
+                double squareWx = fx - squareX0, squareWy = fy - squareY0;
+                for (int c = 0; c < 3; c++)
+                {
+                    double v00 = Sample(image, squareX0, squareY0, 2 - c);
+                    double v10 = Sample(image, squareX0 + 1, squareY0, 2 - c);
+                    double v01 = Sample(image, squareX0, squareY0 + 1, 2 - c);
+                    double v11 = Sample(image, squareX0 + 1, squareY0 + 1, 2 - c);
+                    rgb[c * plane + dest] = (float)(
+                        (((1 - squareWx) * v00 + squareWx * v10) * (1 - squareWy) +
+                        ((1 - squareWx) * v01 + squareWx * v11) * squareWy) / 255.0);
+                }
+                continue;
+            }
             if (mode == StretchNearest)
             {
                 int sy = Math.Min(image.Height - 1, (int)((long)y * image.Height / resizedHeight));
@@ -98,5 +126,11 @@ public static class ModelPreprocessing
             }
         }
         return new ModelInput(rgb, mapping);
+    }
+
+    private static byte Sample(PixelBuffer image, int x, int y, int channel)
+    {
+        if (x < 0 || y < 0 || x >= image.Width || y >= image.Height) return 0;
+        return image.Bgra[(y * image.Width + x) * 4 + channel];
     }
 }

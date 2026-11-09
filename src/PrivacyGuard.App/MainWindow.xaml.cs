@@ -51,6 +51,7 @@ public partial class MainWindow : Window
         InitializeVideoTab();
         InitializeBatchTab();
         InitializeBatchExportTab();
+        LoadLocalModelIfAvailable();
     }
 
     private async void OpenImage_Click(object sender, RoutedEventArgs e)
@@ -128,7 +129,11 @@ public partial class MainWindow : Window
 
     private void LoadModel_Click(object sender, RoutedEventArgs e)
     {
-        if (_isDetecting) { _vm.Status = "解析を停止してからモデルを変更してください。"; return; }
+        if (_isDetecting || _modelInstalling || _batchRunning || _videoScanning || _videoTracking || _videoExporting)
+        {
+            _vm.Status = "解析・モデル導入が完了してから切り替えてください。";
+            return;
+        }
         var dialog = new OpenFileDialog
         {
             Title = "ONNXモデル定義（JSON）を選択",
@@ -138,17 +143,7 @@ public partial class MainWindow : Window
         if (dialog.ShowDialog(this) != true) return;
         try
         {
-            var (manifest, modelFile) = ModelManifest.LoadAndValidate(dialog.FileName);
-            var replacement = new OnnxExposureDetector(manifest, modelFile);
-            var previous = _detector;
-            _detector = replacement;
-            _loadedManifest = manifest;
-            _lastProbe = null;
-            ModelProbeButton.IsEnabled = true;
-            ExportProbeButton.IsEnabled = false;
-            previous?.Dispose();
-            _vm.ModelStatus = $"モデル: {manifest.ModelId} / 前処理: {manifest.Preprocessing}（外部ONNX・CPU実験）";
-            _vm.Status = "モデルの読み込みが完了しました。対応カテゴリや検出精度は未検証です。";
+            ActivateModelManifest(dialog.FileName);
         }
         catch (Exception ex)
         {
