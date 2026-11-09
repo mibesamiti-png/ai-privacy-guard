@@ -181,10 +181,12 @@
                             <Button Content="現在フレームをAI解析" Click="VideoDetectFrame_Click"/>
                             <Button Content="フレーム時刻を索引化" Click="VideoIndexFrames_Click"/>
                             <TextBlock Text="全動画AIサンプル走査：" VerticalAlignment="Center" Margin="9,0,2,0"/>
-                            <ComboBox x:Name="VideoScanRateCombo" Width="72" SelectedIndex="1" VerticalAlignment="Center">
+                            <ComboBox x:Name="VideoScanRateCombo" Width="140" SelectedIndex="1" VerticalAlignment="Center">
                                 <ComboBoxItem Content="1 fps"/>
                                 <ComboBoxItem Content="2 fps"/>
                                 <ComboBoxItem Content="4 fps"/>
+                                <ComboBoxItem Content="8 fps（高密度）"/>
+                                <ComboBoxItem Content="12 fps（高密度）"/>
                             </ComboBox>
                             <Button x:Name="VideoScanButton" Content="全動画をサンプル走査" Click="VideoScanAll_Click"/>
                         </WrapPanel>

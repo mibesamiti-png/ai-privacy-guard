@@ -129,12 +129,11 @@ public sealed class FfmpegVideoService
         [EnumeratorCancellation] CancellationToken ct)
     {
         EnsureInput(path);
-        if (samplesPerSecond is not (1 or 2 or 4))
-            throw new ArgumentOutOfRangeException(nameof(samplesPerSecond), "1, 2 or 4 samples/sec supported.");
-        if (video.DurationUs <= 0) throw new ArgumentOutOfRangeException(nameof(video));
-        const int maxSamples = 30_000;
-        if (video.DurationUs / 1_000_000d * samplesPerSecond > maxSamples)
-            throw new NotSupportedException("Video is too long for this scan configuration (30,000 sample limit).");
+        // Preflight the same bounded policy as the UI; do not accidentally
+        // spin up an unbounded FFmpeg stream when high-density sampling is chosen.
+        var budget = VideoScanPlanner.Plan(video.DurationUs, samplesPerSecond,
+            video.EstimatedFramesPerSecond);
+        const int maxSamples = VideoScanPlanner.MaxSamples;
         double ratio = Math.Min(1.0, 640.0 / Math.Max(video.Width, video.Height));
         int width = Math.Max(2, ((int)Math.Round(video.Width * ratio / 2.0)) * 2);
         int height = Math.Max(2, ((int)Math.Round(video.Height * ratio / 2.0)) * 2);
