@@ -64,3 +64,9 @@
 - Real pinned 320n ONNX CPU smoke PASS on synthetic frames, GitHub Actions #42687318433. Weights were temporary and not bundled.
 - CI PASS: core xUnit 109/109; OBS tests 7/7; real ONNX 2/2 synthetic inferences. Next: verify main CI #42687745033, then perform local image/video detection quality evaluation. Model recall still unknown.
 - Model weights are NOT committed. Read `docs/R6_NUDENET_MODEL.md` and note AGPL/relicensing ambiguity before redistribution.
+
+## R6 cross-domain ONNX evaluation — 2026-11-09
+- PR #12 adds reproducible ephemeral adult runway/cosplay, 2D Yor/Ningguang and 3D Raiden/Ningguang image probes.
+- CI #42694286982: **7/7 public sources loaded, 1 total candidate**, `FEMALE_GENITALIA_COVERED` (confidence 0.665824) on an adult swimwear runway photo. 2D, 3D and cosplay clothed controls: 0 candidates.
+- Raw third-party image pixels deleted before publishing the GitHub artifact; report holds links/attribution/hashes, class boxes and geometry-only maps.
+- NO true under-skirt positive validation; see `docs/R6_REALMEDIA_EVAL_RESULTS.md`.
