@@ -80,8 +80,8 @@
 - No source person/game imagery in public artifact; source URLs and abstract boxes only. See `docs/R6_LINGERIE_FASHION_DEBUG_RESULTS.md`.
 - Next: build a dedicated annotated adult garment visibility dataset/second-stage classifier with positive/negative cases and explicit privacy-scene context.
 
-## R7 dense offline video scan — implementation awaiting CI
-- Branch `feature/r7-video-dense-sampling`: video scan cadence now 1/2/4/**8/12** fps, with preflight 30,000-sample cap, estimated counts, and warnings when source fps is lower than selected cadence.
+## R7 dense offline video scan — verified PR, merged
+- PR #14 merged into `main` as `77b5c15900350a290ca5d4b25803fcf106692131`. Video scan cadence now 1/2/4/**8/12** fps, with preflight 30,000-sample cap, estimated counts, and warnings when source fps is lower than selected cadence.
 - Python FFmpeg regression uses **only synthetic video**, 133ms pulse: intended to demonstrate 12fps can see an event 1fps misses. C# xUnit tests cover budgeting and invalid configurations.
 - No change to live OBS streaming; not evidence of model recall or complete frame coverage. No private media committed.
 - Verify green Windows CI and actual pulse logs before merge. See `docs/R7_HIGH_DENSITY_VIDEO_SCAN.md`.

@@ -76,7 +76,7 @@ Green CI is a real compiler/test/publish verification. It does **not** prove cor
 - Existing C# xUnit 109/109 and OBS xUnit 7/7 passed. Images never committed/distributed; report includes source links, detections CSV/JSON and geometry-only PNGs.
 - See `docs/R6_LINGERIE_FASHION_DEBUG_RESULTS.md` for exact category/confidence, limitations and reproducibility.
 
-## R7 pending validation
-- C# video scan budget/profile xUnit tests: written, Windows CI pending.
-- Python FFmpeg regression: artificial white pulse for source frames 7–10 (133ms at 30fps); should be missed at 1fps but sampled at 12fps, pending actual CI.
-- WPF compile and artifact publish pending; real video and actual model accuracy not tested.
+## R7 verified PR Windows CI (2026-11-10)
+- C# video scan budget/profile xUnit tests: PASSED in 121/121 core suite. Windows compile, artifacts and 7/7 OBS tests PASSED on [CI #42710234669](https://github.com/mibesamiti-png/ai-privacy-guard/actions/runs/42710234669).
+- Python FFmpeg synthetic pulse test PASSED: artificial white frames 7–10 (133ms at 30fps) were missed by 1fps sampling and observed at 12fps. All 21 Python tests PASSED.
+- WPF compile and Windows artifact publish PASS; real Windows interactive UI/hardware and detection accuracy NOT TESTED.
