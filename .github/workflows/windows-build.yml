@@ -136,7 +136,7 @@ jobs:
       - name: Publish Windows x64 app
         run: dotnet publish src/PrivacyGuard.App/PrivacyGuard.App.csproj -c Release -r win-x64 --self-contained true -p:PublishSingleFile=false -o dist/win-x64
 
-      - name: Publish R5.1 experimental OBS bridge
+      - name: Publish experimental OBS bridge
         run: dotnet publish src/PrivacyGuard.LiveBridge/PrivacyGuard.LiveBridge.csproj -c Release -r win-x64 --self-contained true -p:PublishSingleFile=false -o dist/live-bridge
 
       - name: Bundle experimental LiveBridge alongside WPF app
@@ -152,17 +152,17 @@ jobs:
             throw 'Expected AIPrivacyGuard.exe was not produced'
           }
           if (-not (Test-Path 'dist/live-bridge/AIPrivacyGuard.LiveBridge.exe')) {
-            throw 'Expected R5.2 live bridge EXE was not produced'
+            throw 'Expected live bridge EXE was not produced'
           }
           if (-not (Test-Path 'dist/win-x64/live-bridge/AIPrivacyGuard.LiveBridge.exe')) {
-            throw 'Expected bundled R5.2 WPF live bridge was not produced'
+            throw 'Expected bundled WPF live bridge was not produced'
           }
           Write-Host 'EXEs exist; WPF/OBS desktop runtime and detection accuracy have NOT been verified.'
 
       - name: Upload app build artifact
         uses: actions/upload-artifact@v4
         with:
-          name: AIPrivacyGuard-R6-Windows-x64
+          name: AIPrivacyGuard-R7-Windows-x64
           path: dist/win-x64/
           if-no-files-found: error
           retention-days: 14
@@ -170,7 +170,7 @@ jobs:
       - name: Upload experimental OBS bridge artifact
         uses: actions/upload-artifact@v4
         with:
-          name: AIPrivacyGuard-R6-LiveBridge-Windows-x64
+          name: AIPrivacyGuard-R7-LiveBridge-Windows-x64
           path: dist/live-bridge/
           if-no-files-found: error
           retention-days: 14
