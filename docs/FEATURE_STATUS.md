@@ -17,7 +17,7 @@
 `Implemented` or `compiled` does not imply reliable sensitive-content detection or operational safety. Full Windows WPF smoke testing and a suitable dedicated model are still required.
 
 ## R5.0 experimental core (2026-11-10)
-- `LiveSafetyGate` and `LiveFramePipeline`: **code authored**, black-frame fallback tests added, Windows CI **pending**.
-- `DirectShowLiveCapture`: **code authored**, real Windows camera device run **not performed**.
+- `LiveSafetyGate` and `LiveFramePipeline`: **code authored**, black-frame fallback tests added, Windows PR CI **PASS 89/89**; hardware/UI **NOT TESTED**.
+- `DirectShowLiveCapture`: **code authored**, real Windows camera device run **NOT PERFORMED**.
 - No OBS or virtual camera output, no persistent watchdog or validated sensitivity model; **not live-stream safe**.
 - See `docs/R5_0_LIVE_CORE.md`.
