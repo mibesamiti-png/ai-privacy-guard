@@ -1,23 +1,34 @@
-# AI Privacy Guard R4.2 handoff
+# AI Privacy Guard R4.3 — GitHub handoff (2026-11-09)
 
-## Current snapshot
-`AIPrivacyGuard_R4_2_Source.zip` / folder `AIPrivacyGuard_R4_2` contains all R4.1 sources plus R4.2 comparison and video integrity extensions. No user media, crops or personal review project are included. No GitHub or Notion modification in this turn.
+## Current source of truth
+- Repository: https://github.com/mibesamiti-png/ai-privacy-guard (Public; never commit private/user media or personal review databases).
+- Main HEAD after R4.3 build fixes: `d77d7c2080167c7bd662713064cb8fb38de3cca5`.
+- PR #1 merged: https://github.com/mibesamiti-png/ai-privacy-guard/pull/1
+- **Main Windows CI PASS**: https://github.com/mibesamiti-png/ai-privacy-guard/actions/runs/42666438651
+- Build artifact: https://github.com/mibesamiti-png/ai-privacy-guard/actions/runs/42666438651/artifacts/13696203027
 
-## New code
-- `src/PrivacyGuard.App/BatchExport.xaml.cs`: comparison pane event handlers, hash + review check, sampled frame output, sample audit.
-- `src/PrivacyGuard.App/MainWindow.xaml`: before/after images and video timestamp control.
-- `src/PrivacyGuard.App/Services/VideoReviewStore.cs`: schema v2 with source SHA-256 and downgrade of v1 approvals to Pending.
-- `src/PrivacyGuard.Core/VideoReviewBinding.cs`: pure hash/version binding policy.
-- `src/PrivacyGuard.Core/BatchExport.cs`: receipt sample audit fields.
-- C# xUnit: `VideoReviewBindingTests.cs` (not run).
-- Python harness: `test_r42_integrity_preview.py` (passed), full Python suite 20 passed.
+## Verified
+- Windows x64/.NET 10 full solution build succeeded.
+- All 78 xUnit tests passed on the PR head; main's build/test/publish stages also passed.
+- Python/FFmpeg synthetic integration suite: 20 tests passed.
+- Windows publish directory uploaded as an artifact containing the executable.
 
-## Critical next steps, in order
-1. On Windows with .NET 10 SDK run `scripts/build.ps1` and fix real compiler/XAML errors; run xUnit and launch app. Check GitHub Actions workflow only after explicitly adding this source to an approved repository.
-2. Windows smoke: load synthetic image and video, approve manual masks, batch export, select receipt and compare original/output at 0.1 and 0.5 seconds, mark sampled comparison, restart and check receipt persisted.
-3. Legacy migration smoke: use an old schema-v1 synthetic review project; verify old Approved decisions become Pending and cannot export until reapproval. Tamper video with same length/mtime and ensure v2 load/export blocks stale review.
-4. Test large video hashing UX, cancellation, memory use, odd dimensions and VFR output offset behaviour.
-5. Implement proper full-video review scrub and reviewer checklist. DO NOT progress to live fail-closed OBS until full Windows validation is complete.
+## NOT verified
+- EXE starts, WPF window and event handlers work on a user's desktop; no interactive smoke test has been performed.
+- End-to-end manual masking, export, batch resume and before/after compare in the actual Windows UI.
+- Compatible specialized exposure-detection model, inference quality and recall (model not bundled).
+- Safe real-time OBS capture/output (R5 not implemented); DO NOT use for live exposure-prevention yet.
 
-## Safety caveats
-C# compile and WPF UI still unverified, specialized exposure model not bundled, sparsely sampled scanning may miss frames. Visual sample audit is not a safety certificate. No media uploaded externally.
+## Highest priority next steps
+1. Download the main build artifact, extract the full directory and perform `docs/SMOKE_TEST_CHECKLIST.md` with **synthetic** test files.
+2. Fix WPF launch/runtime issues found by those tests and rerun CI; record outcomes and logs in `docs/TEST_RESULTS.md`.
+3. Run an offline end-to-end image/video/batch test, including Pending export blocked and SHA-256 review invalidation on modified source.
+4. Measure high-resolution hashing, FFmpeg process cancellation, long-video memory, VFR timestamps and mask tracking failure handling.
+5. Evaluate a legitimately licensed compatible model on an approved labeled dataset before claiming sensitive-exposure detection capabilities.
+6. Only after Windows application workflows and accuracy are reviewed: start R5 with a fail-closed output design.
+
+## Build process
+- Branch changes via PR; CI on PR and main push.
+- Required green steps: source checks → Python/FFmpeg → restore → compile → xUnit → publish → artifact.
+- A published EXE file is **not** equivalent to a tested WPF application.
+- See `docs/R4_3_CHANGELOG.md`, `docs/FEATURE_STATUS.md` and `docs/SMOKE_TEST_CHECKLIST.md`.
