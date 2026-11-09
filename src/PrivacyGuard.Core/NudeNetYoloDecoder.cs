@@ -21,6 +21,9 @@ public static class NudeNetYoloDecoder
         "FEMALE_BREAST_COVERED", "BUTTOCKS_COVERED"
     ];
 
+    private static float Get(ReadOnlySpan<float> values, int anchor, int channel, int n, bool channelFirst) =>
+        channelFirst ? values[channel * n + anchor] : values[anchor * Channels + channel];
+
     public static IReadOnlyList<DetectionCandidate> Decode(
         ReadOnlySpan<float> values, IReadOnlyList<int> dims, ModelManifest manifest,
         ModelInputTransform transform, int maxCandidates = 200)
@@ -42,9 +45,8 @@ public static class NudeNetYoloDecoder
         if (n is < 1 or > 100000 || (long)values.Length != (long)n * Channels)
             throw new InvalidDataException("Invalid NudeNet output dimensions.");
 
-        float Get(int anchor, int channel) =>
-            channelFirst ? values[channel * n + anchor] : values[anchor * Channels + channel];
-
+        // ReadOnlySpan cannot be captured in a local closure; decode directly
+        // via the static helper to keep this allocation-free.
         // Only allow category IDs explicitly named in the manifest: avoids
         // incorrectly masking faces, feet, stomach, etc.
         List<DetectionCandidate> boxes = new();
@@ -54,7 +56,7 @@ public static class NudeNetYoloDecoder
             float bestScore = manifest.ScoreThreshold;
             for (int cls = 0; cls < ClassCount; cls++)
             {
-                float score = Get(i, cls + 4);
+                float score = Get(values, i, cls + 4, n, channelFirst);
                 if (float.IsFinite(score) && score <= 1f && score >= bestScore)
                 {
                     // YOLOv8 chooses the best class per anchor before
@@ -68,7 +70,7 @@ public static class NudeNetYoloDecoder
                 !string.Equals(category, Labels[bestClass], StringComparison.Ordinal))
                 continue;
 
-            float cx = Get(i, 0), cy = Get(i, 1), w = Get(i, 2), h = Get(i, 3);
+            float cx = Get(values, i, 0, n, channelFirst), cy = Get(values, i, 1, n, channelFirst), w = Get(values, i, 2, n, channelFirst), h = Get(values, i, 3, n, channelFirst);
             if (!float.IsFinite(cx) || !float.IsFinite(cy) ||
                 !float.IsFinite(w) || !float.IsFinite(h) || w <= 0 || h <= 0)
                 continue;
