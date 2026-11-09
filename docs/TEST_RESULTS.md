@@ -52,8 +52,12 @@ Green CI is a real compiler/test/publish verification. It does **not** prove cor
 - Physical DirectShow camera reconnect, OBS renderer restart, manually measured A/V sync: NOT TESTED.
 - Not ready to prevent privacy incidents during live broadcasts.
 
-## R6 model integration — unverified until CI
-- New YOLOv8 raw-head unit tests and source coordinate geometry tests added; CI result pending.
-- Optional real 320n ONNX inference smoke added. Observe actual GitHub job step outcome; do not infer from overall CI green.
+## R6 model integration — verified PR CI (2026-11-10)
+- PR run: https://github.com/mibesamiti-png/ai-privacy-guard/actions/runs/42687318433 — PASS.
+- C# core xUnit 109/109; OBS 7/7; actual CPU model smoke PASS with synthetic solid 0 and 90 images, both returning 0 candidates as expected for trivial images.
+- Main merge `69d095ad87fd2e3110237633e7ee40eee21ac5b4`; main CI https://github.com/mibesamiti-png/ai-privacy-guard/actions/runs/42687745033 (check final conclusion separately).
+
+- YOLOv8 raw-head and square-pad geometry tests PASS within core C# xUnit suite 109/109.
+- Real pinned 320n ONNX download SHA verified and ONNX CPU inference executed twice on synthetic frames; MODEL_SMOKE_PASS in PR CI #42687318433.
 - Real-world detection performance, particularly brief nipple exposure or underwear seen under skirts, NOT TESTED.
 - No personal media or model weights are bundled with the public repository.
