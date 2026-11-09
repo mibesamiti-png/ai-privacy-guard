@@ -51,8 +51,8 @@
 - Specialized under-skirt/panty-visible detector: **NOT IMPLEMENTED**, no consenting adult positive ground-truth corpus; cannot claim real incident detection recall.
 - See `docs/R6_LINGERIE_FASHION_DEBUG_RESULTS.md`.
 
-## R7 high-density offline video scan (PR/CI pending)
+## R7 high-density offline video scan (Windows PR CI verified)
 - UI and FFmpeg streaming add 8/12fps to original 1/2/4fps rates; default remains 2fps.
 - New `VideoScanPlanner` preflight caps 30,000 samples, shows nominal blind interval and warns on duplicate sampling above source fps.
-- Synthetic 133ms pulse FFmpeg test and C# planning xUnit tests added; results pending Windows CI.
+- Synthetic 133ms pulse FFmpeg test PASSED (1fps missed, 12fps sampled). C# planner unit tests PASSED. PR #14 Windows CI #42710234669: 121/121 Core xUnit, 7/7 OBS tests, 21 Python tests, build and publish all green.
 - No true complete-frame safety guarantee, no validated under-skirt-specific model, not for live broadcasting.
