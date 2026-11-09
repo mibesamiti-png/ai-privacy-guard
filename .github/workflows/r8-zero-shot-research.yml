@@ -38,7 +38,7 @@ jobs:
         run: python -m pip install --index-url https://download.pytorch.org/whl/cpu torch==2.6.0 torchvision==0.21.0
 
       - name: Install experiment dependencies (separate from Windows app)
-        run: python -m pip install "transformers==4.51.3" "Pillow==11.2.1" "safetensors>=0.5,<1"
+        run: python -m pip install "transformers==4.51.3" "Pillow==11.2.1" "safetensors>=0.5,<1" "scipy==1.16.3"
 
       - name: Run synthetic full-frame inference with BOTH actual models
         run: |
