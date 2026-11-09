@@ -39,3 +39,11 @@
 - Synthetic xUnit tests: **89/89 passed** in PR CI [#42670038848](https://github.com/mibesamiti-png/ai-privacy-guard/actions/runs/42670038848). Full Windows camera hardware and UI integration **NOT TESTED**.
 - R5.0 remains **headless and not ready for broadcast**: no output/watchdog/OBS and no validated exposure detection model.
 - Next action: verify main CI [#42670458131](https://github.com/mibesamiti-png/ai-privacy-guard/actions/runs/42670458131), then implement downstream watchdog and sanitized output. See `docs/R5_0_LIVE_CORE.md`.
+
+## R5.1 branch work (not merged until CI passes)
+- Branch: `feature/r5-1-watchdog-obs-browser-source`.
+- Adds `LiveOutputWatchdog`, `BmpFrameEncoder`, `LocalObsBrowserSource`, and `AIPrivacyGuard.LiveBridge` standalone console.
+- OBS integration is a localhost Browser Source that receives only watchdog snapshots; separate from main WPF UI. Synthetic `--demo` needs no camera/model.
+- New core watchdog tests and live browser HTTP integration tests added. Windows build/tests currently awaiting CI confirmation.
+- Read `docs/R5_1_OBS_BRIDGE.md` before changing architecture. No personal media in public GitHub.
+- Next action: PR and CI checks, fix compiler/integration errors, confirm publishing both EXEs, run synthetic Windows/OBS manual smoke before any live use.

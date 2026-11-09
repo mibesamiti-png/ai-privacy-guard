@@ -21,3 +21,10 @@
 - `DirectShowLiveCapture`: **code authored**, real Windows camera device run **NOT PERFORMED**.
 - No OBS or virtual camera output, no persistent watchdog or validated sensitivity model; **not live-stream safe**.
 - See `docs/R5_0_LIVE_CORE.md`.
+
+## R5.1 OBS Browser Source prototype
+- Core watchdog + BMP encoder: source written, C# unit tests added; CI not yet verified.
+- Localhost sanitized-only Browser Source, generated URL token, HTML polling fallback: code written; CI HTTP integration tests not yet verified.
+- Separate executable with synthetic demo / experimental DirectShow input: code written, Windows build and OBS UI smoke pending.
+- **Not production-ready.** No validated specialized exposure model, no completed real camera/OBS/manual end-to-end testing, no audio sync.
+- Details: `docs/R5_1_OBS_BRIDGE.md`.
