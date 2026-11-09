@@ -1,35 +1,45 @@
-# AI Privacy Guard — GitHub bootstrap (R4.2 source baseline)
+# AI Privacy Guard — R7 Windows prototype
 
-**GitHub setup:** see [`docs/GITHUB_SETUP.md`](docs/GITHUB_SETUP.md). GitHub repository and Windows CI have **not** been created/run by this ZIP.
+Privacy-conscious offline image, video and experimental live-OBS content review application for Windows, built in **C#/.NET 10 / WPF**.
 
----
+**Project state (2026-11-10):** R7 code merged via [PR #14](https://github.com/mibesamiti-png/ai-privacy-guard/pull/14). Windows PR CI [#42710234669](https://github.com/mibesamiti-png/ai-privacy-guard/actions/runs/42710234669) passed (121/121 Core xUnit, 7/7 OBS xUnit, 21 Python/FFmpeg tests, executable publication). Interactive Windows WPF UI and genuine privacy-exposure detection performance are **not** verified. **Do not treat this tool as a reliable live privacy protection barrier.**
 
-# AI Privacy Guard — R4.2 source prototype
+## Supported functions
 
-**Status: R4.2 source code authored; Windows/.NET C# build, WPF runtime, xUnit and real ONNX exposure inference are NOT verified. This is not suitable for live broadcasting.**
+- Open image; manually mark, review and apply black/blur/pixel masks.
+- Optional **third-party NudeNet 320n** ONNX model download to the user's LocalAppData with pinned SHA-256; local inference for candidates, not guaranteed detection. No external images are uploaded for inference.
+- Video frame seek, approximate timestamp index, candidate review and mask keyframes.
+- **R7 offline video sample scan:** 1, 2, 4, 8 and 12 samples/sec (default 2); up to 30,000 samples per scan, with approximate gaps/low-source-fps warnings. Pending approval still required before export.
+- Local batch analysis, review-before-export, source/hash-bound output comparison.
+- Experimental separate localhost OBS Browser Source bridge, watchdog black output, camera reconnect, optional manual audio offset. No reliable live crash recovery or validated detection recall.
 
-## What's new since R4.1
+## Download and run
 
-- **Before/after output viewer:** choose a completed batch export and compare the original versus processed image side-by-side. Videos show source and output frames from the same approximate timestamp supplied in seconds.
-- **Separate sample audit:** after visually inspecting the displayed frames, record the time inspected. This DOES NOT certify entire video safety.
-- **SHA-256 video review binding:** video review schema v2 binds decisions to source content. Legacy review schema 1 loads all decisions as `Pending`; reapproval is required before export.
-- **More consistency checks:** batch comparison verifies the current source hash, review fingerprint, and output hash before showing a preview, and rechecks before saving an audit marker.
-- **Synthetic tests:** Python/FFmpeg test suite now contains 20 tests; extra C# xUnit tests are written but not executed without the Windows .NET 10 SDK.
+1. Open [GitHub Actions — Windows builds](https://github.com/mibesamiti-png/ai-privacy-guard/actions/workflows/windows-build.yml) and choose the latest **successful `main`** build.
+2. Download the `AIPrivacyGuard-R7-Windows-x64` artifact (or earlier version-named archive for older successful runs). Fully extract the directory.
+3. Run `AIPrivacyGuard.exe`. This build is self-contained; Windows x64 is required. FFmpeg/ffprobe may be required on PATH for full video features.
+4. To use NudeNet, select the explicit **露出検出AIを導入（NudeNet）** button and read its license/precision warning. No model is downloaded automatically without user consent.
+5. Use the video tab's full-video scan rate selector for 8/12fps when a higher offline sampling density is needed; scan cost and false positives can increase.
 
-## Windows verification steps
+GitHub Actions artifacts are temporary and may require GitHub sign-in. No third-party ONNX weights or user images are bundled in this public repository.
 
-1. Install .NET 10 SDK and `ffmpeg`/`ffprobe` on PATH. Run `powershell -ExecutionPolicy Bypass -File .\scripts\build.ps1` from the project directory.
-2. Launch the published WPF app, open `samples\batch_fixture` and verify synthetic image/video preview and manual review editing. The dedicated exposure detection model is NOT included.
-3. Approve a mask for an image or video, export to the default output folder and select the completed export row.
-4. Click **選択した出力を比較** to switch to the dedicated **出力比較** tab, then click the same label inside that tab to render original / output. For video, enter a timestamp (such as `0.5`) and click again for that sample. Click **表示サンプルの確認を記録** only after actually checking the displayed sample.
-5. Restart and check persistence. Validate old schema-v1 video reviews require renewed approvals. Do not rely on this tool as an automatic safety barrier.
+## Safety and accuracy boundaries
 
-## Known limitations
+- NudeNet has no dedicated label for a skirt exposing underwear. It may miss brief incidents, small details, dark images and 2D/3D characters.
+- Even 12fps offline sampling leaves ~83ms nominal gaps and cannot detect events between sampled frames. VFR rounding and imperfect models add more uncertainty.
+- A 12fps 30,000-frame scan limit makes long videos require a lower rate or a future segment-based design.
+- All automatically generated candidates remain **Pending** until a user reviews them. Approving a mask on sampled frames does not establish coverage of unsampled frames.
+- OBS Browser Source and camera hardware have not been fully tested on a real streaming setup. An OBS renderer failure may freeze a previously visible frame.
 
-- No validated exposure detection model; compatible ONNX model + manifest are not bundled. Generic person detection is not exposure detection.
-- R4 batch video scanning is sparse (1fps), and dynamic masks are keyframe-interpolated; missing exposure events and tracking errors are possible.
-- Video comparison is an approximately seeked *single frame*, not exhaustive or frame-perfect. Output audio is not previewed side by side.
-- Source SHA-256 can be slow for large videos. Windows GUI compile/runtime need actual Windows validation.
-- Users' original media, crops, and private review records are not in the source ZIP or uploaded anywhere.
+## Development and handoff
 
-See `docs/R4_2_CHANGELOG.md`, `docs/HANDOFF.md`, `docs/VIDEO_REVIEW_INTEGRITY.md`, `docs/BATCH_COMPARISON.md`, `docs/TEST_RESULTS.md`.
+- Latest project handoff: [docs/HANDOFF.md](docs/HANDOFF.md)
+- Current feature status: [docs/FEATURE_STATUS.md](docs/FEATURE_STATUS.md)
+- R7 dense sampling design/test: [docs/R7_HIGH_DENSITY_VIDEO_SCAN.md](docs/R7_HIGH_DENSITY_VIDEO_SCAN.md)
+- R6 model provenance and known limitations: [docs/R6_NUDENET_MODEL.md](docs/R6_NUDENET_MODEL.md)
+- Test and CI history: [docs/TEST_RESULTS.md](docs/TEST_RESULTS.md)
+- Windows build/source integrity: `scripts/build.ps1`, `scripts/check_source.py`, `.github/workflows/windows-build.yml`
+
+To build locally, install .NET 10 SDK and compatible FFmpeg tools, then run `dotnet build AIPrivacyGuard.slnx -c Release` followed by `dotnet test tests/PrivacyGuard.Core.Tests/PrivacyGuard.Core.Tests.csproj -c Release`.
+
+Public repository: do not commit private media, identifiable user images, personal review databases, local passwords, or unlicensed model files.
