@@ -1,16 +1,17 @@
-# Feature status — R4.2
+# Feature status — R4.3 (2026-11-09)
 
 | Feature | Code state | Verification |
 |---|---|---|
-| R0–R1.1 image read/manual mask/zoom/SQLite | Authored | Structural only; Windows UI not tested |
-| R2 ONNX model adapter/diagnostics | Authored | Mock fixtures; native ONNX not tested; specialist model missing |
-| R3 video seek/sample scan/motion interpolation | Authored | Synthetic FFmpeg/Python fixtures; Windows UI not tested |
-| R4.0 batch scan/queue/resume | Authored | C# xUnit drafted, not run |
-| R4.1 approved-only image/video batch export | Authored | Synthetic FFmpeg output test, WPF untested |
-| R4.2 image + sampled video before/after comparison | Authored | FFmpeg timestamp comparison test passed; WPF untested |
-| R4.2 source SHA-256 bound video review / legacy reset | Authored | C# test drafted; Python content hash contract test passed; WPF untested |
-| R4.2 sample audit timestamp | Authored | C# test drafted; actual GUI/restart untested |
+| R0–R1.1 image read/manual mask/zoom/SQLite | Authored | Windows C# compile and unit tests PASS; desktop UI NOT TESTED |
+| R2 ONNX model adapter/diagnostics | Authored | Compiled; synthetic/mocked fixtures; real compatible exposure model NOT TESTED |
+| R3 video seek/sample scan/motion interpolation | Authored | Compile/xUnit PASS; synthetic FFmpeg fixtures; desktop UI NOT TESTED |
+| R4.0 batch scan/queue/resume | Authored | Compile/xUnit PASS; desktop UI NOT TESTED |
+| R4.1 approved-only image/video batch export | Authored | Compile/xUnit PASS; FFmpeg synthetic tests PASS; desktop UI NOT TESTED |
+| R4.2 image + sampled video before/after comparison | Authored | Compile/xUnit PASS; FFmpeg sample comparison PASS; desktop UI NOT TESTED |
+| R4.2 SHA-256 bound video review / legacy reset | Authored | C# tests PASS; Python synthetic content-hash check PASS; desktop UI NOT TESTED |
+| R4.2 sample audit timestamp | Authored | Compile/xUnit PASS; GUI/restart NOT TESTED |
+| R4.3 Windows CI / executable artifact | Verified in CI | Main workflow PASS: build, 78 C# tests, 20 Python tests, publish, artifact upload |
 | R5 live OBS/latency/fail closed | Not implemented | — |
 | Dedicated validated exposure model | Not implemented | — |
 
-Do not interpret source state as deployed or validated capability.
+`Implemented` or `compiled` does not imply reliable sensitive-content detection or operational safety. Full Windows WPF smoke testing and a suitable dedicated model are still required.
