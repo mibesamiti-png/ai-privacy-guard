@@ -10,5 +10,6 @@
   <Folder Name="/tests/">
     <Project Path="tests/PrivacyGuard.Core.Tests/PrivacyGuard.Core.Tests.csproj" />
     <Project Path="tests/PrivacyGuard.LiveObs.Tests/PrivacyGuard.LiveObs.Tests.csproj" />
+    <Project Path="tests/PrivacyGuard.AI.Smoke/PrivacyGuard.AI.Smoke.csproj" />
   </Folder>
 </Solution>
