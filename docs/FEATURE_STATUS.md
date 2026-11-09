@@ -36,3 +36,11 @@
 - WPF experimental synthetic demo launcher with bundled bridge: **Windows WPF compile passed**, real desktop smoke pending.
 - OBS renderer/process crash cannot be guaranteed to clear stale pixels; no dedicated verified exposure detector.
 - See `docs/R5_2_RECOVERY_AUDIO.md`.
+
+## R6 — NudeNet exposure AI integration (in PR, validation pending)
+- ONNX raw YOLOv8 18-class decoder and square-pad preprocessing: source added; C# unit tests written.
+- Local one-click third-party model download + pinned SHA-256 and offline reload: source added; Windows GUI untested.
+- Existing image/video/batch analyzer uses shared detector interface. No new auto-approval.
+- Optional real ONNX synthetic inference in CI added; upstream download/test result must be verified separately.
+- Model is not bundled; NudeNet is **not** a dedicated skirt-underwear visibility model. No empirical accuracy metrics, NOT safe for live protection.
+- See `docs/R6_NUDENET_MODEL.md`.
