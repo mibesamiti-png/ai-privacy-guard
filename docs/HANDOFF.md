@@ -85,3 +85,10 @@
 - Python FFmpeg regression uses **only synthetic video**, 133ms pulse: intended to demonstrate 12fps can see an event 1fps misses. C# xUnit tests cover budgeting and invalid configurations.
 - No change to live OBS streaming; not evidence of model recall or complete frame coverage. No private media committed.
 - Verify green Windows CI and actual pulse logs before merge. See `docs/R7_HIGH_DENSITY_VIDEO_SCAN.md`.
+
+## R8.0 independent multi-model proposals — merged, Windows PR CI verified (2026-11-10)
+- PR #16 merged into main at `78c34660580504bd63fb70bb31a3f66f4f54fb6f`: https://github.com/mibesamiti-png/ai-privacy-guard/pull/16
+- Windows CI #42715218212 PASS: **129/129 Core xUnit, 7/7 OBS xUnit, 21 Python/FFmpeg tests**, real NudeNet ONNX smoke and external media scripts, Windows WPF/LiveBridge compilation/publish. Interactive Windows UI still NOT TESTED.
+- New `MultiModelProposalAnalyzer.ScanAsync` independently runs supplied `IExposureDetector` models on the full original frame. A future specialist can propose its own boxes even when NudeNet returns zero. Proposals retain model provenance and separate scores; model failures explicitly mark an incomplete scan.
+- This is **a Core API foundation, not a trained garment specialist**. No specialist model, UI/OBS wiring, trained accuracy or proven privacy safety exists. R7 user-facing behavior remains unchanged.
+- Next: R8.1 independently annotated consented adult 2D/3D/real positive+negative benchmark; R8.2 actual specialist model integration; R8.3 held-out precision/recall and runtime evaluation; R8.4 opt-in WPF review integration. Full scope: `docs/R8_MULTIMODEL_PROPOSALS.md`.
