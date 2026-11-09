@@ -1,0 +1,68 @@
+name: R8 Research — Two Zero-Shot Garment Models (Synthetic Only)
+
+on:
+  pull_request:
+    paths:
+      - 'scripts/r8_zero_shot_compare.py'
+      - 'tests/python/test_r8_zero_shot_compare.py'
+      - '.github/workflows/r8-zero-shot-research.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: r8-research-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  compare-models:
+    name: CPU inference on non-human synthetic dress
+    runs-on: ubuntu-latest
+    timeout-minutes: 40
+    env:
+      HF_HUB_DISABLE_TELEMETRY: "1"
+      HF_HUB_DISABLE_PROGRESS_BARS: "1"
+      HF_HOME: ${{ github.workspace }}/.hf-research-cache
+      TOKENIZERS_PARALLELISM: "false"
+    steps:
+      - name: Checkout (no private images)
+        uses: actions/checkout@v4
+
+      - name: Python 3.11
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+
+      - name: Install PyTorch CPU wheels
+        run: python -m pip install --index-url https://download.pytorch.org/whl/cpu torch==2.6.0 torchvision==0.21.0
+
+      - name: Install experiment dependencies (separate from Windows app)
+        run: python -m pip install "transformers==4.51.3" "Pillow==11.2.1" "safetensors>=0.5,<1" "scipy==1.16.3"
+
+      - name: Run synthetic full-frame inference with BOTH actual models
+        run: |
+          python scripts/r8_zero_shot_compare.py --models grounding-dino-tiny owlv2-base-ensemble --synthetic --threshold 0.15 --out "$RUNNER_TEMP/r8_model_results.json"
+
+      - name: Verify two-model result is real, not simulated
+        run: |
+          python - "$RUNNER_TEMP/r8_model_results.json" <<'PY'
+          import json, sys
+          data = json.load(open(sys.argv[1], encoding='utf-8'))
+          assert data["evaluation_type"] == "unlabeled_zero_shot_garment_probe"
+          assert len(data["models"]) == 2, "Both actual model calls are required"
+          assert all(len(x["samples"]) == 1 and
+                     x["samples"][0]["inference_ms"] >= 0 and
+                     x["load_ms"] >= 0 for x in data["models"])
+          assert data["ground_truth_available"] is False
+          assert data["privacy_safety_verified"] is False
+          print("R8_BOTH_MODELS_REAL_INFERENCE_PASS")
+          PY
+
+      - name: Upload ONLY coordinate-only metadata (no photos/weights)
+        uses: actions/upload-artifact@v4
+        with:
+          name: R8-ZeroShot-Synthetic-Model-Results
+          path: ${{ runner.temp }}/r8_model_results.json
+          if-no-files-found: error
+          retention-days: 7
