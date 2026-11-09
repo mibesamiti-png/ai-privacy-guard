@@ -60,3 +60,17 @@ Only a JSON report is uploaded for seven days; no model weights or synthetic ima
 4. Only after model validation, design explicit opt-in model import and candidate review in the Windows app. Keep pending human review and never claim livestream safety from candidate proposals.
 
 No live broadcasting protection claims. No covert/unauthorized or underage imagery for model evaluation.
+
+## R8.1 verified research execution results (2026-11-10)
+- Successful Windows PR CI: https://github.com/mibesamiti-png/ai-privacy-guard/actions/runs/42721585795 (129 Core xUnit + 7 OBS xUnit + 30 Python tests; build/publish green).
+- Successful actual-model CPU research CI: https://github.com/mibesamiti-png/ai-privacy-guard/actions/runs/42721586938 . Artifact: `R8-ZeroShot-Synthetic-Model-Results` (JSON only; original synthetic image NOT bundled).
+- Synthetic image: one flat non-human geometric dress shape, 256×256; prompts: skirt, dress, swimsuit, shorts, underwear; score threshold 0.15.
+
+| Model | Checkpoint load | Inference | Proposals (NOT unique correct objects) |
+|---|---:|---:|---:|
+| IDEA-Research/grounding-dino-tiny | 10.583 s | 29.816 s | 11 overlapping, differently labeled boxes |
+| google/owlv2-base-patch16-ensemble | 25.833 s | 53.253 s | 0 |
+
+Grounding DINO assigned overlapping labels **shorts, underwear, skirt, swimsuit and dress** to the same synthetic region, showing why prompt proposals must not be mistaken for reliable garment recognition. OWLv2's zero at this threshold/image is not evidence of inferior overall sensitivity. Both raw CPU inference times are too slow for the intended realtime use without substantial adaptation, and model revisions are not yet pinned. No human, anime, 3D or positive exposure images were used in this specific experiment. **Precision/recall are not known.**
+
+Troubleshooting (R8.1): 1) GitHub runner-level context is not valid in a job-level `env`, use `github.workspace`. 2) Transformers pipeline `trust_remote_code` must not be duplicated in `model_kwargs`. 3) OWLv2 image processing needs SciPy. All fixed before final green run.
