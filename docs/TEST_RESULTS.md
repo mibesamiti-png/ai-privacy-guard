@@ -1,15 +1,23 @@
-# Verification report — R4.2 (2026-11-09)
+# Verification report — R4.3 (2026-11-09)
 
-| Command or scenario | Result | Scope |
-|---|---|---|
-| `python scripts/check_source.py` | PASS | XML/XAML structure, project refs, 74 event names, comparison control names |
-| `python -m unittest discover -s tests/python -v` | PASS, 20/20 | Python/FFmpeg synthetic media and hashing semantics |
-| Same-length/mtime file content mutation | PASS | SHA-256 detects changed bytes in isolated Python fixture |
-| FFmpeg original/masked same-time PNG extraction | PASS | Synthetic video comparison harness |
-| Existing video output tests | PASS | MP4 black-box interval and audio retention, independent Python harness |
-| C# `VideoReviewBindingTests` | WRITTEN, NOT RUN | Dotnet SDK unavailable locally |
-| C# all project xUnit tests | NOT RUN | Dotnet SDK unavailable locally |
-| WPF build, image/video UI, batch export | NOT RUN | Windows environment unavailable locally |
-| Actual ONNX exposure inference | NOT RUN | Compatible model and Windows runtime not supplied |
+## GitHub Actions verification
+- **Main PASS**: [Windows workflow #42666438651](https://github.com/mibesamiti-png/ai-privacy-guard/actions/runs/42666438651), squash-merged commit `d77d7c2080167c7bd662713064cb8fb38de3cca5`.
+- **PR PASS**: [Windows workflow #42666001582](https://github.com/mibesamiti-png/ai-privacy-guard/actions/runs/42666001582), fix head `09baf07226928214e597929930a58618dee635b6`.
+- .NET 10 SDK and FFmpeg setup, static source checks, Python/FFmpeg tests (20), NuGet restore, `dotnet build`, `dotnet test`, Windows x64 publish, EXE existence and artifact upload: all PASS.
+- xUnit result on PR: **78 passed, 0 failed, 0 skipped**. Main xUnit step also PASS.
+- [Main build artifact](https://github.com/mibesamiti-png/ai-privacy-guard/actions/runs/42666438651/artifacts/13696203027) exists (zip archive size approx 73 MB). This only confirms the published files are present.
 
-Passing the Python suite does NOT prove the WPF app compiles or runs. Windows CI on push/PR should be checked on a repository with this source before claiming an executable build.
+## Not yet tested
+- Interactive WPF application launch and interaction on a Windows desktop.
+- Real-image/video end-to-end manual acceptance and exported artifact comparison through the WPF GUI.
+- Specialized exposure-detection model integration and classification performance.
+- Live OBS fail-closed output safety.
+
+## Historical R4.2 local-only results
+- `python scripts/check_source.py`: PASS (XAML/XML, project refs, event names).
+- `python -m unittest discover -s tests/python -v`: PASS 20/20 using synthetic media.
+- Same-file metadata with changed bytes correctly detected by SHA-256 synthetic fixture.
+- FFmpeg same-time comparison and moving mask synthetic fixtures PASS.
+
+### Interpret results carefully
+Green CI is a real compiler/test/publish verification. It does **not** prove correctness of untested WPF interaction, actual sensitive-content detection, or live stream safety.
