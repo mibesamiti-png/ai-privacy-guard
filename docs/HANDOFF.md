@@ -57,10 +57,10 @@
 - Integrated main CI: https://github.com/mibesamiti-png/ai-privacy-guard/actions/runs/42677559049 (verify final status before claiming success).
 - Details: `docs/R5_2_RECOVERY_AUDIO.md`. All real hardware/OBS testing still requires local Windows.
 
-## R6 external NudeNet AI integration (working branch)
-- Branch: `feature/r6-nudenet-model-integration` (PR CI pending; do not merge before checking it).
+## R6 NudeNet AI integration — merged and verified PR
+- PR #9 merged in main commit `69d095ad87fd2e3110237633e7ee40eee21ac5b4`.
 - New NudeNet YOLOv8 18-class raw output decoder, 320n-specific zero-square preprocessing, manifest support, pinned URL/hash and local installer.
 - Minimal GUI button in Image tab; installed model auto-loads offline and powers existing image/video/batch inference.
-- Optional real ONNX synthetic smoke runs only on CI runner, downloads weights into TEMP, deletes them, and never places them in build artifacts. It is continue-on-error; inspect result separately.
-- Next: validate CI compile/tests; review actual ONNX smoke; fix bugs; merge and verify main CI; real exposure recall still unevaluated.
+- Real pinned 320n ONNX CPU smoke PASS on synthetic frames, GitHub Actions #42687318433. Weights were temporary and not bundled.
+- CI PASS: core xUnit 109/109; OBS tests 7/7; real ONNX 2/2 synthetic inferences. Next: verify main CI #42687745033, then perform local image/video detection quality evaluation. Model recall still unknown.
 - Model weights are NOT committed. Read `docs/R6_NUDENET_MODEL.md` and note AGPL/relicensing ambiguity before redistribution.
