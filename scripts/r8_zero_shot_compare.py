@@ -181,8 +181,8 @@ def main() -> None:
         # Hub downloads model weights only; source images stay local.
         # safetensors avoids untrusted pickle weight deserialization.
         return pipeline("zero-shot-object-detection", model=model_id,
-                        device=-1, model_kwargs={"use_safetensors": True,
-                                                 "trust_remote_code": False})
+                        device=-1, trust_remote_code=False,
+                        model_kwargs={"use_safetensors": True})
 
     result = compare(images, args.models, args.threshold, make_pipeline)
     args.out.parent.mkdir(parents=True, exist_ok=True)
