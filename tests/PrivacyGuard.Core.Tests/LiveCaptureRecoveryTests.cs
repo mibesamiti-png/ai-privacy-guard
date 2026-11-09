@@ -98,11 +98,11 @@ public sealed class LiveCaptureRecoveryTests
         using var cts = new CancellationTokenSource(TimeSpan.FromSeconds(3));
         var gate = new LiveSafetyGate(new FakeDetector());
         gate.EnableExperimentalProcessing();
+        int sinkCount = 0;
         var sink = new CollectingSink(_ =>
         {
             if (sinkCount++ == 1) cts.Cancel();
         });
-        int sinkCount = 0;
         var runner = new LiveCaptureRecovery(
             ct => { attempts++; return OneFrameThenDisconnect(ct); },
             gate, sink, () => blackouts++,
