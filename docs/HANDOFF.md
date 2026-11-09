@@ -49,9 +49,10 @@
 - Next action: verify the integrated `main` CI, run synthetic Windows/OBS manual smoke, then test real camera disconnect using non-sensitive footage; do not use for production live privacy.
 
 ## R5.2 ongoing development
-- Branch: `feature/r5-2-recovery-audio-wpf-bridge` (do not merge without green CI).
+- PR #7 merged into main as `114003647c5b24c38803602234fab48695cb390d`; PR Windows CI passed.
 - Capture recovery and bounded camera read timeout; gate numbering preserved across reconnects, model faults stop processing.
 - Optional **manual** audio offset through OBS WebSocket, password from `APG_OBS_WS_PASSWORD` only; not automatic synchronization.
 - New WPF synthetic OBS demo tab starts bundled `live-bridge/AIPrivacyGuard.LiveBridge.exe`, does not expose unverified camera launch as one-click operation.
-- CI now bundles independent LiveBridge in normal Windows artifact. Validate both executables, C# core/HTTP tests and WPF compile.
+- CI now bundles independent LiveBridge in normal Windows artifact. Both executables published and WPF compiled; 103/103 core C# tests and 7/7 OBS transport tests PASSED on GitHub Windows CI #42677140187.
+- Integrated main CI: https://github.com/mibesamiti-png/ai-privacy-guard/actions/runs/42677559049 (verify final status before claiming success).
 - Details: `docs/R5_2_RECOVERY_AUDIO.md`. All real hardware/OBS testing still requires local Windows.
