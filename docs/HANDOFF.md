@@ -34,8 +34,8 @@
 - See `docs/R4_3_CHANGELOG.md`, `docs/FEATURE_STATUS.md` and `docs/SMOKE_TEST_CHECKLIST.md`.
 
 ## New R5.0 development branch (2026-11-10)
-- Branch: `feature/r5-live-safety-core` (not merged until CI passes).
+- Branch: `feature/r5-live-safety-core` **merged** via PR #3; main commit `a67133657f0a662dd04cd04bd543c71a31d26231`.
 - Added experimental black-frame `LiveSafetyGate`, sanitized-only `LiveFramePipeline`, and Windows DirectShow capture adapter.
-- Synthetic xUnit tests added; CI/hardware results to be verified from GitHub workflow before claiming success.
+- Synthetic xUnit tests: **89/89 passed** in PR CI [#42670038848](https://github.com/mibesamiti-png/ai-privacy-guard/actions/runs/42670038848). Full Windows camera hardware and UI integration **NOT TESTED**.
 - R5.0 remains **headless and not ready for broadcast**: no output/watchdog/OBS and no validated exposure detection model.
-- Next action: inspect PR CI, fix compile/test failures, then implement downstream watchdog and sanitized output. See `docs/R5_0_LIVE_CORE.md`.
+- Next action: verify main CI [#42670458131](https://github.com/mibesamiti-png/ai-privacy-guard/actions/runs/42670458131), then implement downstream watchdog and sanitized output. See `docs/R5_0_LIVE_CORE.md`.
