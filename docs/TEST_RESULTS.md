@@ -29,9 +29,12 @@ Green CI is a real compiler/test/publish verification. It does **not** prove cor
 - **NOT RUN**: real DirectShow camera device smoke, interactive UI, OBS output, audio sync, exposure detector accuracy and downstream heartbeat watchdog.
 - main push [#42670458131](https://github.com/mibesamiti-png/ai-privacy-guard/actions/runs/42670458131): conclusion must be checked separately.
 
-## R5.1 bridge checks (pending CI)
-- Core watchdog stale-timeout and BMP encoder tests added. NOT YET EXECUTED.
-- Localhost Browser Source HTTP synthetic integration test added. NOT YET EXECUTED.
-- Windows standalone console publish step added. NOT YET EXECUTED.
-- Real device, WPF UI coupling and actual OBS desktop integration: NOT TESTED.
+## R5.1 bridge checks — verified PR CI (2026-11-10)
+- Core watchdog stale-timeout and BMP encoder tests: PASS within **98/98** core xUnit suite.
+- Localhost Browser Source HTTP synthetic integration: PASS **1/1**.
+- Windows standalone console publish and artifact upload: PASS.
+- - Passing PR CI: https://github.com/mibesamiti-png/ai-privacy-guard/actions/runs/42673993149 on commit `ff88600a6c41f35a2317a506237e57472577ea80`.
+- Main squash commit: `0c758a8b53cb9a36af93a5c6219a6a09d0f7e236`.
+- Main CI: https://github.com/mibesamiti-png/ai-privacy-guard/actions/runs/42674405361 (verify final conclusion).
+- Real DirectShow camera device, WPF UI coupling, and actual OBS desktop integration: **NOT TESTED**.
 - This build is **not appropriate for live-stream privacy protection**.
