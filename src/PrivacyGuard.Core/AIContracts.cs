@@ -77,6 +77,8 @@ public sealed class ModelManifest
             throw new InvalidDataException("Unsupported model output format.");
         if (OutputFormat == "nudenet_yolov8_18class")
         {
+            if (Classes is null)
+                throw new InvalidDataException("NudeNet class mapping is required.");
             if (InputWidth != InputHeight || Preprocessing != ModelPreprocessing.NudeNetSquare ||
                 Coordinates != "xyxy_input_pixels")
                 throw new InvalidDataException("NudeNet requires square padding with pixel coordinates.");
