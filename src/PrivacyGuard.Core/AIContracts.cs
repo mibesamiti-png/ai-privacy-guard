@@ -82,7 +82,7 @@ public sealed class ModelManifest
                 throw new InvalidDataException("NudeNet requires square padding with pixel coordinates.");
             foreach (var (id, label) in Classes)
             {
-                if (!int.TryParse(id, out int index) ||
+                if (!int.TryParse(id, out int index) || index < 0 ||
                     index >= NudeNetYoloDecoder.ClassCount ||
                     !string.Equals(label, NudeNetYoloDecoder.Labels[index], StringComparison.Ordinal))
                     throw new InvalidDataException("NudeNet class ID / label mapping mismatch.");
