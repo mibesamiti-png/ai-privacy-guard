@@ -29,10 +29,10 @@
 - **Not production-ready.** No validated specialized exposure model, no completed real camera/OBS/manual end-to-end testing, no audio sync.
 - Details: `docs/R5_1_OBS_BRIDGE.md`.
 
-## R5.2 capture/OBS integration (branch pending CI)
-- Automatic camera reconnect with exponential backoff and blackout: **source authored**, synthetic tests written, Windows CI pending.
+## R5.2 capture/OBS integration — PR CI passed
+- Automatic camera reconnect with exponential backoff and blackout: **CI passed**, 103/103 core xUnit tests; real camera unplug NOT TESTED.
 - Timeout on hung camera frame reads: **source authored**, physical device unplug test pending.
-- OBS audio input manual sync offset via localhost WebSocket: **source authored**, payload tests written; OBS live connection/sync calibration not tested.
-- WPF experimental synthetic demo launcher with bundled bridge: **source authored**, Windows WPF smoke pending.
+- OBS audio input manual sync offset via localhost WebSocket: **CI payload tests passed**; real OBS connection/sync calibration not tested.
+- WPF experimental synthetic demo launcher with bundled bridge: **Windows WPF compile passed**, real desktop smoke pending.
 - OBS renderer/process crash cannot be guaranteed to clear stale pixels; no dedicated verified exposure detector.
 - See `docs/R5_2_RECOVERY_AUDIO.md`.
