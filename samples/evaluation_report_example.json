@@ -1,0 +1,33 @@
+{
+  "evaluation_type": "independently_labeled_boxes",
+  "images_evaluated": 2,
+  "min_score": 0.5,
+  "match_iou": 0.5,
+  "overall": {
+    "tp": 1,
+    "fp": 2,
+    "fn": 1,
+    "precision": 0.3333333333333333,
+    "recall": 0.5,
+    "f1": 0.4
+  },
+  "by_category": {
+    "TEST_REGION_A": {
+      "tp": 1,
+      "fp": 1,
+      "fn": 0,
+      "precision": 0.5,
+      "recall": 1.0,
+      "f1": 0.6666666666666666
+    },
+    "TEST_REGION_B": {
+      "tp": 0,
+      "fp": 1,
+      "fn": 1,
+      "precision": 0.0,
+      "recall": 0.0,
+      "f1": 0.0
+    }
+  },
+  "warning": "Scores are uncalibrated; this measures only the supplied annotated dataset, not livestream safety."
+}

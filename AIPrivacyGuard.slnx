@@ -1,0 +1,11 @@
+<Solution>
+  <Folder Name="/src/">
+    <Project Path="src/PrivacyGuard.App/PrivacyGuard.App.csproj" />
+    <Project Path="src/PrivacyGuard.AI/PrivacyGuard.AI.csproj" />
+    <Project Path="src/PrivacyGuard.Core/PrivacyGuard.Core.csproj" />
+    <Project Path="src/PrivacyGuard.Media/PrivacyGuard.Media.csproj" />
+  </Folder>
+  <Folder Name="/tests/">
+    <Project Path="tests/PrivacyGuard.Core.Tests/PrivacyGuard.Core.Tests.csproj" />
+  </Folder>
+</Solution>

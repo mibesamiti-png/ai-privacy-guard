@@ -1,0 +1,23 @@
+{
+  "schemaVersion": 1,
+  "images": [
+    {
+      "id": "synthetic_frame_A",
+      "truth": [
+        {"category": "TEST_REGION_A", "box": [0.10, 0.10, 0.30, 0.30]},
+        {"category": "TEST_REGION_B", "box": [0.60, 0.60, 0.20, 0.20]}
+      ],
+      "predictions": [
+        {"category": "TEST_REGION_A", "box": [0.10, 0.11, 0.30, 0.30], "score": 0.93},
+        {"category": "TEST_REGION_A", "box": [0.50, 0.10, 0.20, 0.20], "score": 0.77}
+      ]
+    },
+    {
+      "id": "synthetic_frame_B_no_truth",
+      "truth": [],
+      "predictions": [
+        {"category": "TEST_REGION_B", "box": [0.25, 0.25, 0.20, 0.20], "score": 0.65}
+      ]
+    }
+  ]
+}

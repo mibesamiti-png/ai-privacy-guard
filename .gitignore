@@ -1,0 +1,30 @@
+**/bin/
+**/obj/
+.vs/
+dist/
+*.user
+*.sqlite
+*.sqlite-shm
+*.sqlite-wal
+*.tmp
+
+# Build/test caches
+__pycache__/
+*.py[cod]
+TestResults/
+*.trx
+*.log
+
+# Personal media, review records, AI model data (opt-in uploads only)
+.env
+.env.*
+private-media/
+private_data/
+review-cache/
+exports/
+output/
+models/*.onnx
+*.onnx
+*.db
+*.db-shm
+*.db-wal

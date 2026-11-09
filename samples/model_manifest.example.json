@@ -1,0 +1,19 @@
+{
+  "schemaVersion": 1,
+  "modelId": "replace-with-your-validated-model",
+  "modelFile": "your-model.onnx",
+  "modelSha256": "REPLACE_WITH_64_HEX_SHA256_OF_ONNX_FILE",
+  "inputName": "images",
+  "outputName": "detections",
+  "inputWidth": 640,
+  "inputHeight": 640,
+  "coordinates": "xyxy_input_pixels",
+  "preprocessing": "letterbox_bilinear",
+  "scoreThreshold": 0.5,
+  "nmsIouThreshold": 0.5,
+  "classes": {
+    "0": "UNDERWEAR_EXPOSURE",
+    "1": "CHEST_EXPOSURE",
+    "2": "CLOTHING_FAILURE"
+  }
+}

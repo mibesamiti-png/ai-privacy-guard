@@ -1,0 +1,17 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <OutputType>WinExe</OutputType>
+    <TargetFramework>net10.0-windows</TargetFramework>
+    <UseWPF>true</UseWPF>
+    <EnableWindowsTargeting>true</EnableWindowsTargeting>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <Nullable>enable</Nullable>
+    <AssemblyName>AIPrivacyGuard</AssemblyName>
+  </PropertyGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\PrivacyGuard.Core\PrivacyGuard.Core.csproj" />
+    <ProjectReference Include="..\PrivacyGuard.AI\PrivacyGuard.AI.csproj" />
+    <ProjectReference Include="..\PrivacyGuard.Media\PrivacyGuard.Media.csproj" />
+    <PackageReference Include="Microsoft.Data.Sqlite" Version="10.0.14" />
+  </ItemGroup>
+</Project>
