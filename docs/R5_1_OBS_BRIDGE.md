@@ -54,3 +54,10 @@ The LiveBridge EXE is independent from the main `AIPrivacyGuard.exe` and current
 ## Next milestone R5.2
 
 Add more robust output watchdog/renderer failure monitoring, connection recovery, integration with the main app, explicit safe input-source inspection, audio synchronization and a model evaluation gate. Do not treat this R5.1 prototype as production-ready.
+
+## Initial verified CI / release status
+- PR #5 merged into main as `0c758a8b53cb9a36af93a5c6219a6a09d0f7e236`.
+- PR Windows CI PASS: https://github.com/mibesamiti-png/ai-privacy-guard/actions/runs/42673993149
+- Core C# tests: 98/98; localhost OBS Browser Source integration: 1/1; both EXEs published and artifacts uploaded.
+- Main push CI: https://github.com/mibesamiti-png/ai-privacy-guard/actions/runs/42674405361 (confirm green before declaring final main verified).
+- No end-to-end real OBS/camera or sensitive detection accuracy test has been completed.
