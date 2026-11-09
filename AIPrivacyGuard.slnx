@@ -4,8 +4,11 @@
     <Project Path="src/PrivacyGuard.AI/PrivacyGuard.AI.csproj" />
     <Project Path="src/PrivacyGuard.Core/PrivacyGuard.Core.csproj" />
     <Project Path="src/PrivacyGuard.Media/PrivacyGuard.Media.csproj" />
+    <Project Path="src/PrivacyGuard.LiveObs/PrivacyGuard.LiveObs.csproj" />
+    <Project Path="src/PrivacyGuard.LiveBridge/PrivacyGuard.LiveBridge.csproj" />
   </Folder>
   <Folder Name="/tests/">
     <Project Path="tests/PrivacyGuard.Core.Tests/PrivacyGuard.Core.Tests.csproj" />
+    <Project Path="tests/PrivacyGuard.LiveObs.Tests/PrivacyGuard.LiveObs.Tests.csproj" />
   </Folder>
 </Solution>
