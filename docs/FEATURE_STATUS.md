@@ -15,3 +15,9 @@
 | Dedicated validated exposure model | Not implemented | — |
 
 `Implemented` or `compiled` does not imply reliable sensitive-content detection or operational safety. Full Windows WPF smoke testing and a suitable dedicated model are still required.
+
+## R5.0 experimental core (2026-11-10)
+- `LiveSafetyGate` and `LiveFramePipeline`: **code authored**, black-frame fallback tests added, Windows CI **pending**.
+- `DirectShowLiveCapture`: **code authored**, real Windows camera device run **not performed**.
+- No OBS or virtual camera output, no persistent watchdog or validated sensitivity model; **not live-stream safe**.
+- See `docs/R5_0_LIVE_CORE.md`.

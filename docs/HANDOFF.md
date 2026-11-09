@@ -32,3 +32,10 @@
 - Required green steps: source checks → Python/FFmpeg → restore → compile → xUnit → publish → artifact.
 - A published EXE file is **not** equivalent to a tested WPF application.
 - See `docs/R4_3_CHANGELOG.md`, `docs/FEATURE_STATUS.md` and `docs/SMOKE_TEST_CHECKLIST.md`.
+
+## New R5.0 development branch (2026-11-10)
+- Branch: `feature/r5-live-safety-core` (not merged until CI passes).
+- Added experimental black-frame `LiveSafetyGate`, sanitized-only `LiveFramePipeline`, and Windows DirectShow capture adapter.
+- Synthetic xUnit tests added; CI/hardware results to be verified from GitHub workflow before claiming success.
+- R5.0 remains **headless and not ready for broadcast**: no output/watchdog/OBS and no validated exposure detection model.
+- Next action: inspect PR CI, fix compile/test failures, then implement downstream watchdog and sanitized output. See `docs/R5_0_LIVE_CORE.md`.
