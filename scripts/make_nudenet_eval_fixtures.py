@@ -76,9 +76,33 @@ def create(root):
     adult(draw,center=155,top=120,scale=.75,garment='dress')
     adult(draw,center=340,top=120,scale=.75,garment='trousers')
     cases.append(save(root,'08_multiple_figures',im,'Two clothed illustrations on patterned background'))
+    # Optional CC0 licensed photograph of an adult marble statue, cropped to
+    # the sculpture. This tests whether the model emits any candidate on
+    # a real photograph; it is NOT a ground-truth people/exposure benchmark.
+    from urllib.request import Request, urlopen
+    from io import BytesIO
+    source_url = "https://upload.wikimedia.org/wikipedia/commons/4/43/Michelangelo%27s_David_%288292252317%29.jpg"
+    try:
+        request = Request(source_url, headers={'User-Agent': 'AIPrivacyGuard-OpenTest/1.0 (public CC0 sculpture evaluation)'})
+        with urlopen(request, timeout=35) as response:
+            source_bytes = response.read(3 * 1024 * 1024)
+        full = Image.open(BytesIO(source_bytes)).convert('RGB')
+        left, top, right, bottom = int(full.width*.52), int(full.height*.05), int(full.width*.82), int(full.height*.98)
+        cropped = full.crop((left, top, right, bottom))
+        cropped.thumbnail((480, 640), Image.Resampling.LANCZOS)
+        item = save(root, '09_cc0_david_marble_statue', cropped,
+                    'Photograph of Michelangelo David adult marble statue: CC0, Mustang Joe; cropped from source')
+        item['source'] = 'Wikimedia Commons (Mustang Joe), CC0-1.0'
+        item['source_url'] = 'https://commons.wikimedia.org/wiki/File:Michelangelo%27s_David_(8292252317).jpg'
+        item['license'] = 'CC0-1.0'
+        cases.append(item)
+        print('Downloaded licensed adult marble statue CC0 photo for a real-image probe.')
+    except Exception as ex:
+        print('CC0 photo could not be fetched; retaining eight synthetic cases:', type(ex).__name__)
+
     data=dict(schema_version=1,
-              purpose='Synthetic regression tests, not real-photo detection accuracy',
-              labels='All figures are synthetic illustrations of adults; no intimate details',
+              purpose='Synthetic regression tests plus optional CC0 marble sculpture photograph; NOT a validated exposure benchmark',
+              labels='Eight generated clothed-figure illustrations, plus one optional CC0 adult classical sculpture photograph',
               cases=cases)
     (root/'fixtures.json').write_text(json.dumps(data,ensure_ascii=False,indent=2),encoding='utf-8')
     print(f'Created {len(cases)} exact-pixel PNG/BGRA fixture pairs in {root}')
