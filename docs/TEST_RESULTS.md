@@ -68,3 +68,10 @@ Green CI is a real compiler/test/publish verification. It does **not** prove cor
 - 2D Yor and Ningguang and 3D Raiden and Ningguang, plus real clothed cosplay controls: all zero. These are NOT positive panty-shot images.
 - All third-party source image data removed before uploading results. Results include source links, SHA-256, JSON and abstract box-only diagrams.
 - Not a sensitivity/recall benchmark. See `docs/R6_REALMEDIA_EVAL_RESULTS.md`.
+
+## R6 cross-domain adult fashion / lingerie debug (2026-11-10 JST)
+- [GitHub Windows CI #42707282951](https://github.com/mibesamiti-png/ai-privacy-guard/actions/runs/42707282951) **PASS**. `NUDENET_THRESHOLD_SWEEP_PASS` confirms 19 x 3 real ONNX inferences; all 19 external images fetched.
+- Threshold 0.10: 5 images, 6 boxes; threshold 0.25: 2 images, 2 boxes; threshold 0.40: 1 image, 1 box.
+- Lingerie-garment proxy: 2/5, 1/5, 0/5 images with any selected NudeNet box at respective thresholds. No real panty-shot ground truth or accuracy validated.
+- Existing C# xUnit 109/109 and OBS xUnit 7/7 passed. Images never committed/distributed; report includes source links, detections CSV/JSON and geometry-only PNGs.
+- See `docs/R6_LINGERIE_FASHION_DEBUG_RESULTS.md` for exact category/confidence, limitations and reproducibility.
