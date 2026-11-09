@@ -56,3 +56,8 @@
 - New `VideoScanPlanner` preflight caps 30,000 samples, shows nominal blind interval and warns on duplicate sampling above source fps.
 - Synthetic 133ms pulse FFmpeg test PASSED (1fps missed, 12fps sampled). C# planner unit tests PASSED. PR #14 Windows CI #42710234669: 121/121 Core xUnit, 7/7 OBS tests, 21 Python tests, build and publish all green.
 - No true complete-frame safety guarantee, no validated under-skirt-specific model, not for live broadcasting.
+
+## R8.0 — independent full-frame multi-model proposals (2026-11-10)
+- `MultiModelProposalAnalyzer` is merged to Core via PR #16. It preserves separate model ID, category, confidence and rectangle; does not rely on NudeNet's ROIs, deduplicate across different models, or automatically approve/mask/export.
+- **Verified on PR Windows CI #42715218212**: 129/129 Core xUnit, 7/7 OBS xUnit and 21 Python/FFmpeg tests. New synthetic tests cover empty primary vs specialist proposals, provenance, cancellation, invalid output and failure handling.
+- **NOT IMPLEMENTED**: a real specialist garment model, image/video/OBS UI integration, genuine positive recall measurement, live stream protection. A completed inference does not imply a safe image. See `docs/R8_MULTIMODEL_PROPOSALS.md`.

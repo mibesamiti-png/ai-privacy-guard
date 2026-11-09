@@ -4,6 +4,8 @@ Privacy-conscious offline image, video and experimental live-OBS content review 
 
 **Project state (2026-11-10):** R7 code merged via [PR #14](https://github.com/mibesamiti-png/ai-privacy-guard/pull/14). Windows PR CI [#42710234669](https://github.com/mibesamiti-png/ai-privacy-guard/actions/runs/42710234669) passed (121/121 Core xUnit, 7/7 OBS xUnit, 21 Python/FFmpeg tests, executable publication). Interactive Windows WPF UI and genuine privacy-exposure detection performance are **not** verified. **Do not treat this tool as a reliable live privacy protection barrier.**
 
+**R8.0 architecture update (2026-11-10):** Independent full-frame multi-model proposal analysis was merged through [PR #16](https://github.com/mibesamiti-png/ai-privacy-guard/pull/16) and passed [Windows CI #42715218212](https://github.com/mibesamiti-png/ai-privacy-guard/actions/runs/42715218212) (129 Core, 7 OBS, 21 Python tests). This is an *offline Core API only*: no new trained garment-specialist model, no WPF/OBS integration, no verified detection recall. The Windows app remains at R7 user-facing capability. See [R8 design](docs/R8_MULTIMODEL_PROPOSALS.md).
+
 ## Supported functions
 
 - Open image; manually mark, review and apply black/blur/pixel masks.

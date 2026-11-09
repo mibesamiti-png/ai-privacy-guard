@@ -80,3 +80,8 @@ Green CI is a real compiler/test/publish verification. It does **not** prove cor
 - C# video scan budget/profile xUnit tests: PASSED in 121/121 core suite. Windows compile, artifacts and 7/7 OBS tests PASSED on [CI #42710234669](https://github.com/mibesamiti-png/ai-privacy-guard/actions/runs/42710234669).
 - Python FFmpeg synthetic pulse test PASSED: artificial white frames 7–10 (133ms at 30fps) were missed by 1fps sampling and observed at 12fps. All 21 Python tests PASSED.
 - WPF compile and Windows artifact publish PASS; real Windows interactive UI/hardware and detection accuracy NOT TESTED.
+
+## R8.0 multi-model foundation — PR Windows CI verified (2026-11-10)
+- PR #16: https://github.com/mibesamiti-png/ai-privacy-guard/pull/16 ; merged main commit `78c34660580504bd63fb70bb31a3f66f4f54fb6f`.
+- Full Windows GitHub Actions https://github.com/mibesamiti-png/ai-privacy-guard/actions/runs/42715218212 **SUCCESS**. Verified job log: Core **129 passed, 0 failed, 0 skipped**; OBS **7 passed, 0 failed, 0 skipped**; Python/FFmpeg integration **21 passed**; real NudeNet ONNX smoke and cross-domain external image script succeeded; both Windows artifacts published.
+- Eight new synthetic Core xUnit tests exercise independent model proposals and negative/error paths. No trained garment model or labeled under-skirt positive evaluation; all model-specific improvements in recall remain unproven. WPF desktop/UI and physical OBS hardware not run.
