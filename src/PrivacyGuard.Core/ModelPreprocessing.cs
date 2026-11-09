@@ -81,17 +81,17 @@ public static class ModelPreprocessing
                 // OpenCV wrapper. RGB NCHW and [0,1] values.
                 double fx = (x + 0.5) * paddedSide / (double)width - 0.5;
                 double fy = (y + 0.5) * paddedSide / (double)height - 0.5;
-                int x0 = (int)Math.Floor(fx), y0 = (int)Math.Floor(fy);
-                double wx = fx - x0, wy = fy - y0;
+                int squareX0 = (int)Math.Floor(fx), squareY0 = (int)Math.Floor(fy);
+                double squareWx = fx - squareX0, squareWy = fy - squareY0;
                 for (int c = 0; c < 3; c++)
                 {
-                    double v00 = Sample(image, x0, y0, 2 - c);
-                    double v10 = Sample(image, x0 + 1, y0, 2 - c);
-                    double v01 = Sample(image, x0, y0 + 1, 2 - c);
-                    double v11 = Sample(image, x0 + 1, y0 + 1, 2 - c);
+                    double v00 = Sample(image, squareX0, y0, 2 - c);
+                    double v10 = Sample(image, squareX0 + 1, y0, 2 - c);
+                    double v01 = Sample(image, squareX0, squareY0 + 1, 2 - c);
+                    double v11 = Sample(image, squareX0 + 1, squareY0 + 1, 2 - c);
                     rgb[c * plane + dest] = (float)(
-                        (((1 - wx) * v00 + wx * v10) * (1 - wy) +
-                        ((1 - wx) * v01 + wx * v11) * wy) / 255.0);
+                        (((1 - squareWx) * v00 + wx * v10) * (1 - squareWy) +
+                        ((1 - squareWx) * v01 + wx * v11) * squareWy) / 255.0);
                 }
                 continue;
             }
