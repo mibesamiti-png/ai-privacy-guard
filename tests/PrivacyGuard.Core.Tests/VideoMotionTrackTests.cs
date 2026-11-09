@@ -35,7 +35,7 @@ public class VideoMotionTrackTests
     [Fact]
     public void OneOrZeroKeyframe_StaysStatic()
     {
-        var one = Motion(new(0, new NormalizedRect(0.8, 0.8, 0.1, 0.1)));
+        var one = Motion(new VideoMaskKeyframe(0, new NormalizedRect(0.8, 0.8, 0.1, 0.1)));
         Assert.Equal(one.Bounds, one.BoundsAt(500_000));
         Assert.False(one.IsMoving);
         Assert.Equal(one.Bounds, Motion().BoundsAt(1_000_000));
@@ -58,12 +58,12 @@ public class VideoMotionTrackTests
     [Fact]
     public void RejectInvalidKeyframeBoundsOrTimestamp()
     {
-        var nonFinite = Motion(new(0, new NormalizedRect(double.NaN, 0.2, 0.2, 0.2)));
+        var nonFinite = Motion(new VideoMaskKeyframe(0, new NormalizedRect(double.NaN, 0.2, 0.2, 0.2)));
         Assert.Throws<ArgumentException>(() => VideoMaskPlan.Validate(nonFinite, 2_000_000));
         var duplicate = Motion(new(0, new NormalizedRect(0.1, 0.1, 0.2, 0.2)),
             new(0, new NormalizedRect(0.2, 0.2, 0.2, 0.2)));
         Assert.Throws<ArgumentException>(() => VideoMaskPlan.Validate(duplicate, 2_000_000));
-        var outside = Motion(new(2_100_000, new NormalizedRect(0.2, 0.2, 0.2, 0.2)));
+        var outside = Motion(new VideoMaskKeyframe(2_100_000, new NormalizedRect(0.2, 0.2, 0.2, 0.2)));
         Assert.Throws<ArgumentException>(() => VideoMaskPlan.Validate(outside, 2_000_000));
     }
 

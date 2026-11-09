@@ -1,5 +1,6 @@
 using System.Collections.ObjectModel;
 using System.IO;
+using Path = System.IO.Path;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
@@ -378,7 +379,7 @@ public partial class MainWindow
         foreach (var c in _videoCandidates)
             if (_videoCurrentUs >= c.StartUs && _videoCurrentUs <= c.EndUs)
             {
-                VideoDrawRect(c.BoundsAt(_videoCurrentUs), c == VideoCandidateList.SelectedItem ? Brushes.Orange : Brushes.DeepSkyBlue, s, x, y);
+                VideoDrawRect(c.BoundsAt(_videoCurrentUs), ReferenceEquals(c, VideoCandidateList.SelectedItem) ? Brushes.Orange : Brushes.DeepSkyBlue, s, x, y);
                 // Purple is the UNSAVED suggested trajectory; orange is the currently saved mask.
                 if (ReferenceEquals(c, _videoMotionSourceCandidate) &&
                     _videoMotionProposal is { Completed: true } proposal)
