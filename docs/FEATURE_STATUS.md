@@ -23,8 +23,8 @@
 - See `docs/R5_0_LIVE_CORE.md`.
 
 ## R5.1 OBS Browser Source prototype
-- Core watchdog + BMP encoder: source written, C# unit tests added; CI not yet verified.
-- Localhost sanitized-only Browser Source, generated URL token, HTML polling fallback: code written; CI HTTP integration tests not yet verified.
-- Separate executable with synthetic demo / experimental DirectShow input: code written, Windows build and OBS UI smoke pending.
+- Core watchdog + BMP encoder: code integrated, C# tests PASS on GitHub Windows CI (98/98 core tests).
+- Localhost sanitized-only Browser Source, generated URL token, HTML polling fallback: one Windows CI HTTP integration test PASS (1/1).
+- Standalone executable with synthetic demo / experimental DirectShow: Windows publish artifact PASS, actual OBS desktop/camera smoke NOT TESTED.
 - **Not production-ready.** No validated specialized exposure model, no completed real camera/OBS/manual end-to-end testing, no audio sync.
 - Details: `docs/R5_1_OBS_BRIDGE.md`.
