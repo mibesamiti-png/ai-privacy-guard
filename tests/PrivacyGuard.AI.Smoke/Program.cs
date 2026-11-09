@@ -2,6 +2,9 @@ using System.Security.Cryptography;
 using PrivacyGuard.AI;
 using PrivacyGuard.Core;
 
+if (args.Length == 4 && args[1] == "--visual-fixtures")
+    return await VisualEval.RunAsync(args[0], args[2], args[3]);
+
 if (args.Length != 1 || !File.Exists(args[0]))
 {
     Console.Error.WriteLine("Usage: dotnet run -- /path/to/320n.onnx");
