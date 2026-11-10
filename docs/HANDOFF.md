@@ -112,3 +112,8 @@
 - Priorities: A local annotation schema/source integrity and undo -> B image review hotkeys -> C timestamp-synchronized video playback evaluation -> D leak-safe benchmark -> E opt-in, rate/cost-bounded compliant X discovery; do not make external API access a prerequisite for local review.
 - R7 existing offline 1/2/4/8/12 fps video sampling is not frame-perfect; playback detection must distinguish sampled/unscanned frames and avoid stale overlays. Current research CLIP/Grounding DINO prototypes remain offline-only.
 - For X, rely on current official API plans and policy, do not automatically download private/restricted media, bypass logins or treat publicly visible content as licensed benchmark/training material. Test with mocked API and synthetic media before user-authorized real API use.
+
+## R8.3 X discovery preference update (2026-11-11; DESIGN ONLY)
+- User prefers **no paid X API for the default discovery workflow**. Use a plain WebView2 browsing panel (or external browser fallback), manual keyword/user search, X's native images/videos result tabs, and explicit bookmark of the original X post permalink to a private local annotation project.
+- **Do not** scrape/automate X website, extract media via hidden requests or cookies, auto-download bulk imagery, or assume a public post grants rights for training. X browser media cannot be assumed locally decodable by the app: require independently approved user-provided local source files for actual pixel/video frame inference.
+- Default X API usage **0 calls, $0 API fee**. Optional paid official X API structured gallery is deferred. Updated source of truth: `docs/R8_3_VALIDATION_LAB_ROADMAP.md` section R8.3-E0. Not yet implemented or desktop-tested.
