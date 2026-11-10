@@ -63,7 +63,21 @@ Acceptance: synthetic 30fps video with 4-frame (~133ms) positive visual flash an
 - Separate train/val/test by source, creator/character/series and near-duplicate media so video frames or crop variants from one source never appear across splits. Freeze held-out evaluation examples. Avoid treating a skewed X search feed as representative real-world prevalence.
 - Acceptance: synthetic fixtures with mathematically expected TP/FP/FN and multiple intervals; ensure empty/uncertain/unscanned video intervals don't inflate accuracy; versioned report JSON with no source pixels.
 
-### R8.3-E — Optional X source discovery (after local lab)
+
+### R8.3-E0 — Browser-first X source discovery (DEFAULT, no paid X API)
+
+**Design decision 2026-11-11:** Prefer embedded WebView2 or external browser fallback for manual X searches. This replaces paid X API use for the **default** X workflow; official API integration below remains a distinct future option.
+
+- WPF X browser tab opens https://x.com with normal manual search and X native image/video tabs. Toolbar: search input, back, forward, reload, open in external browser, and URL bookmark. Permit user-driven username/keyword search. No app-held X API credentials.
+- Reviewer explicitly pastes a post URL into a local reference queue or clicks a Save current permalink button when the visible URL is a real post permalink. Save only the post permalink and local reviewer notes/tags. No extraction of X page DOM, image pixels, video streams, thumbnails, cookies, network traffic, or user datasets.
+- A local image/video already owned or explicitly licensed for evaluation can be imported separately with the normal file picker, with provenance reference linked only by user action. **Embedded X video playback is not automatically frame-by-frame analyzable**. Browser viewing does not equal license to download, train or redistribute.
+- Never use Playwright/Selenium extraction, automatic scrolling, injected page scripts for content capture, private endpoints, scraping, cookie extraction or bypass of access controls. X prohibits unapproved scraping and non-API website automation. Respect user privacy and deletions.
+- Cost banner: "X API利用料金0円（通常ブラウザ閲覧のみ）". This is an X API fee statement, not a claim about ISP fees, subscriptions or every other cost.
+- Browser profile and URLs: no host objects for X, HTTPS-only, block unsafe schemes, log no auth cookies/session identifiers, provide external-browser fallback for authentication, playback and X-side restrictions.
+- Acceptance: manual X search by term/user, navigation to native image/video tabs, explicit saving/opening of a post permalink, no X API requests, local-only reference store, WebView2 Windows desktop smoke. Mock URL-validation tests must reject arbitrary protocols and false X permalink formats.
+- **Deferred enhancement**: A separately approved and billable official X API gallery is optional, not a blocker for R8.3.
+
+### R8.3-E — Optional PAID X API source discovery (DEFERRED, after local lab)
 
 **Feasibility from official X docs checked 2026-11-10:**
 - Recent search \`GET /2/tweets/search/recent\` searches last 7 days, with \`has:images\`, \`has:videos\`, \`from:handle\` and \`-is:retweet\` operators, pagination. Historical archive search \`/2/tweets/search/all\` requires pay-per-use/Enterprise access.
@@ -97,10 +111,11 @@ Acceptance: synthetic 30fps video with 4-frame (~133ms) positive visual flash an
 | B | A | Image review queue with keyboard labeling | Review/restore 20 synthetic images without losing decisions |
 | C | A + existing R7 video | Video playback annotations, PTS overlay, rescan timeline | 133ms pulse missed by lower sampling visibly logged; local video review works |
 | D | A–C | Annotated evaluation and report | Correct synthetic TP/FP/FN and zero-denominator rules |
-| E | A/B, optional official X API | X post discovery gallery and legal source handoff | Mocked search/timeline/cost/security tests pass; approved real API account tested separately |
-| F | A–E | Real Windows manual QA + handoff | Human verified playback and project persistence; no unsupported safety claims |
+| E0 | A/B, browser only | Manual WebView2 X native search and permalink bookmarking | Human UI smoke + no X API usage + local metadata only |
+| E (deferred) | Optional official X API | Structured X gallery | Only if separately approved, mock cost/security tests pass |
+| F | A–D + E0 | Real Windows manual QA + handoff | Human verified playback, X manual browsing and project persistence; no unsupported safety claims |
 
-**Priority if time limited:** A → B → C → D. X (E) should not block creating ground truth from local rights-cleared assets. If user specifically wants X earlier, an initial "open query in X" + manual authorized local import adapter can launch before full paid API integration.
+**Priority if time limited:** A → B → C → D. X (E) should not block creating ground truth from local rights-cleared assets. X discovery defaults to E0 manual WebView2 browser and the paid API path E is deferred unless explicitly approved.
 
 ## Out of scope
 
