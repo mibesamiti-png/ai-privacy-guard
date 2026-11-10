@@ -48,3 +48,9 @@ Shortcuts are disabled while editing text or combo controls. An existing model p
 ## Next phase
 
 R8.3-C: first deliver an in-app local video player with accurate source PTS and a synchronized overlay of existing R7 sampled-frame proposals. Then add frame stepping, manual missed intervals, and optional bounded asynchronous detection while playing (with scanned/not-scanned/drop counters and stale-overlay protections). Never promise completeness at 12 fps.
+
+## Verified PR Windows CI (2026-11-11)
+
+- CI https://github.com/mibesamiti-png/ai-privacy-guard/actions/runs/42861165081 **SUCCESS** on the prior image-review implementation commit `d9d7516b`. Windows x64 .NET 10 WPF build, publish to EXE and OBS bridge publish succeeded. Core xUnit **160/160**, LiveObs **7/7**, Python/FFmpeg tests **40** with 4 expected conditional skips. Existing NudeNet public 19-image × 3 thresholds workflow returned its pass marker. No real exposed-content correctness metrics were established.
+- An additional UI navigation fix (avoiding duplicate decode, disabling the queue while AI inference runs) followed that CI. Verify the **final PR head** CI separately before considering the final revision validated.
+- Actual human Windows GUI, keyboard and drawing smoke remains **unverified**, regardless of CI status.
