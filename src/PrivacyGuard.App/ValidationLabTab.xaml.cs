@@ -24,7 +24,7 @@ public partial class MainWindow
             string root = System.IO.Path.Combine(Environment.GetFolderPath(
                 Environment.SpecialFolder.LocalApplicationData), "AIPrivacyGuard");
             string project = System.IO.Path.Combine(root, "validation_lab.json");
-            _labStore = ValidationLabStore.Open(project);
+            _labStore ??= ValidationLabStore.Open(project);
             LabProjectPathText.Text = project + " （PC内に保存・公開GitHubへは送信しません）";
             LabRefreshLists();
         }
@@ -198,10 +198,13 @@ public partial class MainWindow
     private void LabRefreshLists()
     {
         if (_labStore is null) return;
-        LabLocalSourcesList.ItemsSource = _labStore.Sources.Select(source =>
+        var previousSource = (LabLocalSourcesList.SelectedItem as LabDisplayRow)?.Id;
+        var rows = _labStore.Sources.Select(source =>
             new LabDisplayRow(source.Id,
                 $"{source.Kind} / {source.Domain} / {source.Truth} ({source.ReviewState}) : {System.IO.Path.GetFileName(source.Path)}"))
             .ToArray();
+        LabLocalSourcesList.ItemsSource = rows;
+        LabLocalSourcesList.SelectedItem = rows.FirstOrDefault(x => x.Id == previousSource);
         LabBookmarksList.ItemsSource = _labStore.Bookmarks.Select(post =>
             new LabDisplayRow(post.Id, post.PostUrl)).ToArray();
     }
@@ -218,25 +221,42 @@ public partial class MainWindow
         {
             Title = "権利・許可を確認した画像・動画を選ぶ",
             Filter = "画像・動画|*.png;*.jpg;*.jpeg;*.bmp;*.tif;*.tiff;*.gif;*.mp4;*.mov;*.avi;*.mkv;*.webm|すべてのファイル|*.*",
-            CheckFileExists = true
+            CheckFileExists = true,
+            Multiselect = true
         };
         if (dialog.ShowDialog(this) != true) return;
+        if (dialog.FileNames.Length > 150)
+        {
+            LabSetStatus("一度に登録できるのは150ファイルまでです。分割して選択してください。");
+            return;
+        }
+        int imported = 0;
         try
         {
-            string extension = System.IO.Path.GetExtension(dialog.FileName).ToLowerInvariant();
-            LabMediaKind kind = extension switch
-            {
-                ".png" or ".jpg" or ".jpeg" or ".bmp" or ".tif" or ".tiff" or ".gif" => LabMediaKind.Image,
-                ".mp4" or ".mov" or ".avi" or ".mkv" or ".webm" => LabMediaKind.Video,
-                _ => throw new InvalidOperationException("検証に対応する画像・動画ファイルを選んでください。")
-            };
             var domain = (PrivacyGuard.Core.LabVisualDomain)Math.Clamp(LabVisualDomain.SelectedIndex, 0, 3);
-            var source = await _labStore.AddLocalSourceAsync(dialog.FileName, kind, domain, rightsConfirmed: true);
+            foreach (var path in dialog.FileNames)
+            {
+                string extension = System.IO.Path.GetExtension(path).ToLowerInvariant();
+                LabMediaKind kind = extension switch
+                {
+                    ".png" or ".jpg" or ".jpeg" or ".bmp" or ".tif" or ".tiff" or ".gif" => LabMediaKind.Image,
+                    ".mp4" or ".mov" or ".avi" or ".mkv" or ".webm" => LabMediaKind.Video,
+                    _ => throw new InvalidOperationException("対応していないファイル形式です。")
+                };
+                await _labStore.AddLocalSourceAsync(path, kind, domain, rightsConfirmed: true);
+                imported++;
+            }
             LabRefreshLists();
-            LabSetStatus($"元ファイルを変更せず登録しました: {System.IO.Path.GetFileName(source.Path)}。判定は未確認です。");
-            LabRightsConfirmed.IsChecked = false;
+            LabQuickRefreshQueue();
+            LabSetStatus($"ローカル素材 {imported}件を登録しました。未確認のまま保存しています。画像クイックレビューで確認できます。");
         }
-        catch (Exception ex) { LabSetStatus("ローカル素材の登録失敗: " + ex.Message); }
+        catch (Exception ex)
+        {
+            LabRefreshLists();
+            LabQuickRefreshQueue();
+            LabSetStatus($"登録 {imported}件まで完了。残りは取り込めませんでした: {ex.Message}");
+        }
+        finally { LabRightsConfirmed.IsChecked = false; }
     }
 
     private LabSource? LabSelectedSource() =>

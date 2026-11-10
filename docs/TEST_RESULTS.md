@@ -101,3 +101,8 @@ Green CI is a real compiler/test/publish verification. It does **not** prove cor
 ## R8.3-A/E0 lab implementation — 2026-11-11
 - PR #23 created; unit tests verified on Windows PR CI #42852426703 for local project, SHA integrity, user-acknowledged negative image, no video-wide negative, region bounds and microsecond time, undo across application restarts, corrupt project, backup, and hostile X URL validation. Windows PR CI #42852426703 **SUCCESS**. Real log counts: **152/152 Core C#**, **7/7 OBS C#**, **40 Python tests (4 conditionally skipped)**. WPF compiled and Windows x64 EXEs published. Interactive WebView2 login/website smoke NOT verified.
 - WebView2 WPF package version 1.0.4314.35 pinned; WPF compilation in CI is not the same as interactive Windows + X login/browser UI smoke. No private media or browser cookies should be present in CI.
+
+## R8.3-B image reviewer — first verified Windows PR run (2026-11-11)
+- PR #24: https://github.com/mibesamiti-png/ai-privacy-guard/pull/24
+- Windows CI #42861165081 **SUCCESS**: 160/160 Core xUnit (includes eight additional rapid-review persistence/undo tests), 7/7 OBS xUnit, Python/FFmpeg **40 tests (4 conditional skips)**, WPF EXE and OBS bridge x64 publish. Existing NudeNet 19-image × 3 threshold smoke returned a pass marker.
+- This CI was for commit `d9d7516b`; subsequent UI-only navigation refinement `a51127ee` was made and needs its final-head CI rerun. No physical WPF screen / keyboard / WebView2 login, frame-accurate video or detector recall is verified by compilation alone.

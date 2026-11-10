@@ -80,3 +80,9 @@
 ## R8.3-A + E0 (PR #23, Windows CI verified)
 - New `ValidationLabStore` in Core (local file integrity, negative image vs unknown vs uncertain, video positive region timestamps, persistent undo) and new WPF Validation Lab tab with rights-checked local media, ordinary manual X browser via WebView2, permalink bookmarking. Notes at `docs/R8_3A_LAB_BROWSER_MVP.md`.
 - No X paid API calls, no media scraping/downloading, no automatic exposure accuracy claims. Existing WPF video detector and OBS unchanged. Next: human positive box/UI, image gallery, frame-time video review.
+
+## R8.3-B — implemented on PR #24, preliminary Windows CI PASS
+- Interactive local-image rapid review tab, review hotkeys, original-image overlays for model proposals vs manually confirmed regions, local detection using already selected ONNX detector, rapid queue with local thumbnails, multi-file explicit-rights import.
+- New human candidate verdicts (correct/false positive/uncertain) are in the independent ground-truth store; they do **not** modify masking approvals and do **not** automatically certify whole images or video as safe. Human misses can be drawn as positive regions.
+- First Windows CI #42861165081 passed 160 Core / 7 OBS / 40 Python (4 conditional skips) and WPF published. Final UI navigation patch and Windows interactive GUI testing remain separately qualified. See `docs/R8_3B_IMAGE_RAPID_REVIEW.md`.
+- In-app video player with PTS timeline, frame stepping and playback-time model overlays **NOT IMPLEMENTED** (next R8.3-C).

@@ -461,6 +461,7 @@
                         </StackPanel>
                         <WrapPanel Grid.Row="1" Margin="0,7,0,5">
                             <Button Content="元ファイルを開く" Click="LabOpenLocal_Click"/>
+                            <Button Content="画像を連続レビュー" Click="LabReviewImage_Click" Background="#147F80" Foreground="White"/>
                             <Button Content="目視確認：対象なし" Click="LabMarkNegative_Click"/>
                             <Button Content="判断保留" Click="LabMarkUncertain_Click"/>
                             <Button Content="判定を元に戻す" Click="LabUndo_Click"/>
@@ -483,6 +484,141 @@
                         <TextBlock Grid.Row="5" x:Name="LabStatusText" Margin="2,10,2,0"
                                    TextWrapping="Wrap" Foreground="#AEE7E4"
                                    Text="画像の詳細な領域ラベル・動画コマ送りは次の実装段階です。"/>
+                    </Grid>
+                </Grid>
+            </TabItem>
+
+            <TabItem x:Name="LabQuickReviewTab" Header="画像クイック検証（R8.3-B）"
+                     Loaded="LabQuickTab_Loaded" PreviewKeyDown="LabQuickPreviewKeyDown">
+                <Grid Margin="10">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="1.35*"/>
+                        <ColumnDefinition Width="3.2*"/>
+                        <ColumnDefinition Width="1.6*"/>
+                    </Grid.ColumnDefinitions>
+                    <Grid Grid.Column="0" Margin="0,0,7,0">
+                        <Grid.RowDefinitions>
+                            <RowDefinition Height="Auto"/>
+                            <RowDefinition Height="Auto"/>
+                            <RowDefinition Height="*"/>
+                            <RowDefinition Height="Auto"/>
+                        </Grid.RowDefinitions>
+                        <TextBlock Grid.Row="0" FontSize="17" FontWeight="SemiBold" Text="画像の検証キュー" Margin="4,4,0,8"/>
+                        <StackPanel Grid.Row="1" Margin="0,0,0,4">
+                            <WrapPanel>
+                                <ComboBox x:Name="LabQuickQueueFilter" Width="135" Margin="2" SelectedIndex="0"
+                                          SelectionChanged="LabQuickFilter_SelectionChanged">
+                                    <ComboBoxItem Content="すべての画像"/>
+                                    <ComboBoxItem Content="未完了"/>
+                                    <ComboBoxItem Content="確認済み"/>
+                                    <ComboBoxItem Content="正解領域あり"/>
+                                    <ComboBoxItem Content="判断保留"/>
+                                </ComboBox>
+                                <Button Content="一覧を更新" Click="LabQuickRefresh_Click"/>
+                            </WrapPanel>
+                            <WrapPanel>
+                                <Button Content="前へ (P)" Click="LabQuickPrevious_Click"/>
+                                <Button Content="次の未完了 (N)" Click="LabQuickNext_Click"/>
+                            </WrapPanel>
+                        </StackPanel>
+                        <ListBox Grid.Row="2" x:Name="LabQuickImagesList"
+                                 Background="#111721" Foreground="#E8E8EE"
+                                 SelectionChanged="LabQuickImagesList_SelectionChanged"
+                                 ScrollViewer.CanContentScroll="True"
+                                 VirtualizingStackPanel.IsVirtualizing="True"
+                                 VirtualizingStackPanel.VirtualizationMode="Recycling">
+                            <ListBox.ItemTemplate>
+                                <DataTemplate>
+                                    <Grid Margin="3" MinHeight="68">
+                                        <Grid.ColumnDefinitions>
+                                            <ColumnDefinition Width="84"/>
+                                            <ColumnDefinition Width="*"/>
+                                        </Grid.ColumnDefinitions>
+                                        <Border Grid.Column="0" Height="62" Width="78" Background="#080D12"
+                                                BorderBrush="#3B4555" BorderThickness="1">
+                                            <Image Source="{Binding Thumbnail}" Stretch="Uniform"/>
+                                        </Border>
+                                        <TextBlock Grid.Column="1" Text="{Binding Display}" VerticalAlignment="Center"
+                                                   Margin="7,0,0,0" TextWrapping="Wrap" FontSize="11"/>
+                                    </Grid>
+                                </DataTemplate>
+                            </ListBox.ItemTemplate>
+                        </ListBox>
+                        <TextBlock Grid.Row="3" x:Name="LabQuickQueueCount" TextWrapping="Wrap"
+                                   FontSize="11" Foreground="#B7C3D0" Margin="4,8,4,0"
+                                   Text="保存済み画像を読み込みます。"/>
+                    </Grid>
+                    <Grid Grid.Column="1" Margin="4,0,8,0">
+                        <Grid.RowDefinitions>
+                            <RowDefinition Height="Auto"/>
+                            <RowDefinition Height="*"/>
+                            <RowDefinition Height="Auto"/>
+                            <RowDefinition Height="Auto"/>
+                        </Grid.RowDefinitions>
+                        <WrapPanel Grid.Row="0" Margin="0,0,0,6">
+                            <Button Content="AI候補を検出" Click="LabQuickDetect_Click"/>
+                            <Button Content="解析停止" Click="LabQuickCancel_Click"/>
+                            <Button Content="見逃し枠を描く (3/M)" Click="LabQuickMiss_Click"/>
+                            <Button Content="画像全体を確認完了" Click="LabQuickComplete_Click"/>
+                        </WrapPanel>
+                        <Border Grid.Row="1" Background="#090D13" BorderBrush="#3B4555" BorderThickness="1">
+                            <Grid>
+                                <Image x:Name="LabQuickImage" Stretch="Uniform"/>
+                                <Canvas x:Name="LabQuickCanvas" Background="Transparent"
+                                        SizeChanged="LabQuickCanvas_SizeChanged"
+                                        MouseLeftButtonDown="LabQuickCanvas_MouseDown"
+                                        MouseMove="LabQuickCanvas_MouseMove"
+                                        MouseLeftButtonUp="LabQuickCanvas_MouseUp"
+                                        LostMouseCapture="LabQuickCanvas_LostCapture"/>
+                                <TextBlock Text="青=AI候補　橙=選択中のAI候補　緑=人間の正解枠"
+                                           HorizontalAlignment="Left" VerticalAlignment="Top"
+                                           Foreground="White" Background="#B0101722" Padding="6"
+                                           IsHitTestVisible="False" Margin="8" FontSize="11"/>
+                            </Grid>
+                        </Border>
+                        <TextBlock Grid.Row="2" Text="ここで「正解」を押すと人による正解記録に保存します。AI候補のスコアを正解率として扱いません。"
+                                   TextWrapping="Wrap" Foreground="#FFD29B" Margin="3,6,3,4" FontSize="11"/>
+                        <TextBlock Grid.Row="3" x:Name="LabQuickCurrentStatus" Foreground="#B6E3D5"
+                                   Margin="3,5,3,0" TextWrapping="Wrap" Text="画像を選択してください。"/>
+                    </Grid>
+                    <Grid Grid.Column="2" Margin="3,0,0,0">
+                        <Grid.RowDefinitions>
+                            <RowDefinition Height="Auto"/>
+                            <RowDefinition Height="Auto"/>
+                            <RowDefinition Height="2*"/>
+                            <RowDefinition Height="Auto"/>
+                            <RowDefinition Height="1*"/>
+                            <RowDefinition Height="Auto"/>
+                        </Grid.RowDefinitions>
+                        <TextBlock Grid.Row="0" Text="AI候補の判定（マスク承認とは別）"
+                                   FontSize="14" FontWeight="SemiBold" TextWrapping="Wrap" Margin="3,4"/>
+                        <StackPanel Grid.Row="1" Margin="0,5,0,6">
+                            <TextBlock Text="人が確認した内容のラベル" Foreground="#B7C3D0" FontSize="11" Margin="2,0,0,3"/>
+                            <ComboBox x:Name="LabQuickTruthCategory" SelectedIndex="0" Margin="2">
+                                <ComboBoxItem Content="衣装が見える" Tag="garment_visible"/>
+                                <ComboBoxItem Content="衣装が隠れている" Tag="garment_occluded"/>
+                                <ComboBoxItem Content="露出の疑い（要確認）" Tag="possible_exposure"/>
+                                <ComboBoxItem Content="その他の確認領域" Tag="other_reviewed_region"/>
+                            </ComboBox>
+                        </StackPanel>
+                        <ListBox Grid.Row="2" x:Name="LabQuickProposalsList"
+                                 Background="#111721" Foreground="#E8E8EE"
+                                 SelectionChanged="LabQuickProposalsList_SelectionChanged"
+                                 DisplayMemberPath="Display"
+                                 ScrollViewer.CanContentScroll="True"
+                                 VirtualizingStackPanel.IsVirtualizing="True"/>
+                        <WrapPanel Grid.Row="3" Margin="0,8,0,8">
+                            <Button Content="正解 (1)" Click="LabQuickCorrect_Click"/>
+                            <Button Content="誤検出 (2)" Click="LabQuickFalsePositive_Click"/>
+                            <Button Content="保留 (4)" Click="LabQuickUncertain_Click"/>
+                            <Button Content="対象なし (5)" Click="LabQuickNegative_Click"/>
+                            <Button Content="元に戻す (Ctrl+Z)" Click="LabQuickUndo_Click"/>
+                        </WrapPanel>
+                        <ListBox Grid.Row="4" x:Name="LabQuickTruthRegionsList" Background="#111721"
+                                 Foreground="#B6E3D5" DisplayMemberPath="Display"/>
+                        <TextBlock Grid.Row="5" x:Name="LabQuickCountsText" Margin="2,9,2,0"
+                                   Foreground="#AEB7C7" TextWrapping="Wrap" FontSize="11"
+                                   Text="見逃し枠・確認済みの正解領域を下に表示します。"/>
                     </Grid>
                 </Grid>
             </TabItem>
