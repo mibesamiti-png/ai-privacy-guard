@@ -1,0 +1,67 @@
+name: R8.2 Research - Region Conflicts and Crop Classifier (Synthetic Only)
+
+on:
+  pull_request:
+    paths:
+      - 'scripts/r8_2_region_reviewer.py'
+      - 'tests/python/test_r8_2_region_reviewer.py'
+      - '.github/workflows/r8-2-region-research.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: r82-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  research:
+    name: Real image-text crop model on abstract synthetic silhouette
+    runs-on: ubuntu-latest
+    timeout-minutes: 40
+    env:
+      HF_HUB_DISABLE_TELEMETRY: "1"
+      HF_HUB_DISABLE_PROGRESS_BARS: "1"
+      HF_HOME: ${{ github.workspace }}/.hf-r82-research-cache
+      TOKENIZERS_PARALLELISM: "false"
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+      - name: Python 3.11
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Install CPU PyTorch
+        run: python -m pip install --index-url https://download.pytorch.org/whl/cpu "torch==2.6.0" "torchvision==0.21.0"
+      - name: Install dedicated research dependencies
+        run: python -m pip install "transformers==4.51.3" "Pillow==11.2.1" "safetensors>=0.5,<1" "scipy==1.16.3"
+      - name: Run region unit tests
+        run: python -m unittest discover -s tests/python -p 'test_r8_2_region_reviewer.py' -v
+      - name: Run ACTUAL image-text model with synthetic garment regions
+        run: python scripts/r8_2_region_reviewer.py --synthetic --out "$RUNNER_TEMP/r82_region_review.json"
+      - name: Verify no automated privacy clearance, and real scores
+        run: |
+          python - "$RUNNER_TEMP/r82_region_review.json" <<'PY'
+          import json, sys
+          d = json.load(open(sys.argv[1], encoding="utf8"))
+          assert d["evaluation_type"] == "r8_2_unlabeled_region_review"
+          assert d["ground_truth_available"] is False
+          assert d["safety_verified"] is False
+          assert d["load_ms"] >= 0
+          assert len(d["regions"]) == 1
+          region = d["regions"][0]
+          assert region["proposal_count"] == 3 and region["candidate_conflict"] is True
+          assert region["review_required"] is True and region["safety_status"] == "unknown"
+          assert region["inference_ms"] >= 0
+          assert len(region["relative_label_ranking"]) == 6
+          assert all(0 <= r["relative_score"] <= 1 for r in region["relative_label_ranking"])
+          print("R8_2_REAL_CROP_MODEL_PASS")
+          PY
+      - name: Upload metadata only, no pixels or model weights
+        uses: actions/upload-artifact@v4
+        with:
+          name: R8-2-Synthetic-Region-Crop-Research
+          path: ${{ runner.temp }}/r82_region_review.json
+          retention-days: 7
+          if-no-files-found: error
