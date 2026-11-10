@@ -71,3 +71,8 @@
 - Code authored on PR #20: IoU-based grouping of R8.1 clothing candidate boxes; keeps contradictory labels rather than forcing a winner. Context-padded crop ranked by independent pretrained LAION CLIP model, **research only**.
 - Dedicated research CI #42826965515 PASS: 10 tests, one genuine model inference on non-human synthetic shape. Source garment labels [skirt, dress, underwear] collapsed to one review group; 167.69ms CPU crop classification. All cases remain review-required and safety unknown.
 - Does NOT provide real dedicated accidental-exposure model, reliable anime/3D/photo recall, trained small specialist, calibrated scores, real-time performance or live OBS safety. Existing Windows WPF behavior not changed.
+
+## R8.3 Validation Lab (specification only, not yet shipped)
+- Planned local first: persistent human-labeled image queue, video playback review with PTS-specific overlays, missed-interval annotations and honest scanned/unscanned coverage, then quantitative independent ground truth evaluation.
+- Optional X gallery to search public media by account/keyword via approved official API after explicit consent and cost control; media viewing is not permission to store/train on it.
+- Full specification and phase gate tests: `docs/R8_3_VALIDATION_LAB_ROADMAP.md`. Existing application features are **not** changed by this design PR.
