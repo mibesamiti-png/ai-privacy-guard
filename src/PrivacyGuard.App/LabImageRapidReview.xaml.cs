@@ -152,9 +152,16 @@ public partial class MainWindow
         }
         if (row is not null)
         {
+            if (_isDetecting || _isLoading)
+            {
+                LabQuickMessage("処理中は別の画像に切り替えられません。");
+                return;
+            }
+            bool alreadySelected = (LabQuickImagesList.SelectedItem as LabQuickImageRow)?.Id == id;
             LabQuickImagesList.SelectedItem = row;
             LabQuickImagesList.ScrollIntoView(row);
-            if (_labQuickSource?.Id != id && !(_isDetecting || _isLoading))
+            // The selection-changed handler already initiates the load for a new row.
+            if (alreadySelected && (_labQuickSource?.Id != id || _labQuickPixels is null))
                 _ = LabQuickLoadImageAsync(id);
         }
     }
@@ -487,17 +494,17 @@ public partial class MainWindow
 
     private void LabQuickGo(int direction, bool pendingOnly)
     {
-        if (_labStore is null) return;
+        if (_labStore is null || _isDetecting || _isLoading) return;
         var images = _labStore.Sources.Where(s => s.Kind == LabMediaKind.Image).ToList();
         if (images.Count == 0) { LabQuickMessage("登録された画像がありません。"); return; }
         int current = images.FindIndex(s => s.Id == _labQuickSource?.Id);
-        if (current < 0) current = 0;
+        if (current < 0) current = direction > 0 ? -1 : 0;
         for (int i = 1; i <= images.Count; i++)
         {
             int index = ((current + direction * i) % images.Count + images.Count) % images.Count;
             var source = images[index];
-            if (pendingOnly && source.ReviewState is LabReviewState.FullyReviewed
-                or LabReviewState.Excluded)
+            if (pendingOnly && (source.ReviewState is LabReviewState.FullyReviewed
+                or LabReviewState.Excluded))
                 continue;
             LabQuickSelectSource(source.Id);
             return;
@@ -544,6 +551,7 @@ public partial class MainWindow
         var historyId = _labQuickHistorySourceId;
         _detectCts = new CancellationTokenSource();
         _isDetecting = true;
+        LabQuickImagesList.IsEnabled = false;
         DetectButton.IsEnabled = false;
         LoadModelButton.IsEnabled = false;
         LabQuickMessage("ローカル画像をAI解析中… 結果は候補としてのみ扱います。");
@@ -576,6 +584,7 @@ public partial class MainWindow
         finally
         {
             _isDetecting = false;
+            LabQuickImagesList.IsEnabled = true;
             DetectButton.IsEnabled = true;
             LoadModelButton.IsEnabled = true;
             ModelProbeButton.IsEnabled = _detector is not null;
