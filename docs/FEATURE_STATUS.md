@@ -76,3 +76,7 @@
 - Planned local first: persistent human-labeled image queue, video playback review with PTS-specific overlays, missed-interval annotations and honest scanned/unscanned coverage, then quantitative independent ground truth evaluation.
 - Optional X gallery to search public media by account/keyword via approved official API after explicit consent and cost control; media viewing is not permission to store/train on it.
 - Full specification and phase gate tests: `docs/R8_3_VALIDATION_LAB_ROADMAP.md`. Existing application features are **not** changed by this design PR.
+
+## R8.3-A + E0 (PR #23, implementation awaiting Windows CI verification)
+- New `ValidationLabStore` in Core (local file integrity, negative image vs unknown vs uncertain, video positive region timestamps, persistent undo) and new WPF Validation Lab tab with rights-checked local media, ordinary manual X browser via WebView2, permalink bookmarking. Notes at `docs/R8_3A_LAB_BROWSER_MVP.md`.
+- No X paid API calls, no media scraping/downloading, no automatic exposure accuracy claims. Existing WPF video detector and OBS unchanged. Next: human positive box/UI, image gallery, frame-time video review.
