@@ -10,6 +10,7 @@ public enum LabMediaKind { Image, Video }
 public enum LabVisualDomain { Unknown, Illustration2D, Model3D, Photograph }
 public enum LabReviewState { Unreviewed, PartiallyReviewed, FullyReviewed, Excluded }
 public enum LabTruthState { Unknown, Positive, Negative, Uncertain }
+public enum LabProposalVerdict { Correct, FalsePositive, Uncertain }
 
 public sealed record LabSource(
     Guid Id, string Path, string Sha256, LabMediaKind Kind, LabVisualDomain Domain,
@@ -22,7 +23,14 @@ public sealed record LabTruthRegion(
     Guid Id, Guid SourceId, NormalizedRect Bounds, string Category,
     long? StartUs, long? EndUs, DateTimeOffset CreatedAtUtc);
 
-public sealed record LabUndoEntry(Guid SourceId, LabSource Previous, Guid? AddedRegionId);
+/// <summary>A *human* verdict on one existing ONNX proposal; model scores remain uncalibrated.</summary>
+public sealed record LabProposalAssessment(
+    Guid Id, Guid SourceId, Guid CandidateId, string ModelId, string CandidateCategory,
+    NormalizedRect Bounds, LabProposalVerdict Verdict, Guid? TruthRegionId,
+    DateTimeOffset ReviewedAtUtc);
+
+public sealed record LabUndoEntry(Guid SourceId, LabSource Previous, Guid? AddedRegionId,
+    Guid? AddedAssessmentId = null);
 
 public sealed class ValidationLabDocument
 {
@@ -30,6 +38,7 @@ public sealed class ValidationLabDocument
     public List<LabSource> Sources { get; set; } = [];
     public List<LabBookmark> Bookmarks { get; set; } = [];
     public List<LabTruthRegion> Regions { get; set; } = [];
+    public List<LabProposalAssessment> Assessments { get; set; } = [];
     public List<LabUndoEntry> UndoHistory { get; set; } = [];
 }
 
@@ -53,6 +62,7 @@ public sealed class ValidationLabStore
     public IReadOnlyList<LabSource> Sources => _document.Sources.AsReadOnly();
     public IReadOnlyList<LabBookmark> Bookmarks => _document.Bookmarks.AsReadOnly();
     public IReadOnlyList<LabTruthRegion> Regions => _document.Regions.AsReadOnly();
+    public IReadOnlyList<LabProposalAssessment> Assessments => _document.Assessments.AsReadOnly();
     public bool CanUndo => _document.UndoHistory.Count > 0;
     public string ProjectPath => _projectPath;
 
@@ -77,10 +87,10 @@ public sealed class ValidationLabStore
     private static void ValidateDocument(ValidationLabDocument doc)
     {
         if (doc.SchemaVersion != 1 || doc.Sources is null || doc.Bookmarks is null ||
-            doc.Regions is null || doc.UndoHistory is null)
+            doc.Regions is null || doc.Assessments is null || doc.UndoHistory is null)
             throw new InvalidDataException("Unsupported or malformed annotation project.");
         if (doc.Sources.Count > MaxEntries || doc.Bookmarks.Count > MaxEntries ||
-            doc.Regions.Count > MaxEntries || doc.UndoHistory.Count > 25)
+            doc.Regions.Count > MaxEntries || doc.Assessments.Count > MaxEntries || doc.UndoHistory.Count > 25)
             throw new InvalidDataException("Annotation project capacity exceeded.");
         if (doc.Sources.Any(s => s.Id == Guid.Empty || !VideoReviewBinding.IsWellFormedSha256(s.Sha256) ||
             !Path.IsPathFullyQualified(s.Path) || !Enum.IsDefined(s.Kind) ||
@@ -98,10 +108,22 @@ public sealed class ValidationLabStore
                 !ValidBounds(r.Bounds) || string.IsNullOrWhiteSpace(r.Category) ||
                 r.Category.Length > 80 || !ValidTime(source.Kind, r.StartUs, r.EndUs)))
             throw new InvalidDataException("Invalid annotation region.");
+        if (doc.Assessments.Select(a => a.Id).Distinct().Count() != doc.Assessments.Count ||
+            doc.Assessments.Any(a => a.Id == Guid.Empty || a.CandidateId == Guid.Empty ||
+                !sources.ContainsKey(a.SourceId) || !Enum.IsDefined(a.Verdict) ||
+                !ValidBounds(a.Bounds) || !ValidProposalText(a.ModelId, 160) ||
+                !ValidProposalText(a.CandidateCategory, 120) ||
+                (a.TruthRegionId is Guid regionId && !doc.Regions.Any(r =>
+                    r.Id == regionId && r.SourceId == a.SourceId)) ||
+                (a.Verdict == LabProposalVerdict.Correct) != (a.TruthRegionId is not null)))
+            throw new InvalidDataException("Invalid proposal assessment.");
         if (doc.UndoHistory.Any(u => u.SourceId == Guid.Empty || u.Previous is null ||
             u.SourceId != u.Previous.Id || !sources.ContainsKey(u.SourceId)))
             throw new InvalidDataException("Invalid undo history.");
     }
+
+    private static bool ValidProposalText(string? value, int max) =>
+        value is { Length: > 0 } && value.Length <= max && !value.Any(char.IsControl);
 
     private static bool ValidBounds(NormalizedRect r) =>
         double.IsFinite(r.X) && double.IsFinite(r.Y) &&
@@ -191,6 +213,67 @@ public sealed class ValidationLabStore
         return annotation;
     }
 
+    /// <summary>Records a human verdict separate from export-mask approvals and
+    /// the model's own output. Correct requires the reviewer to choose a truth label.
+    /// False positive does NOT imply the whole image is negative.</summary>
+    public LabProposalAssessment AssessProposal(Guid sourceId, Guid candidateId,
+        string modelId, string candidateCategory, NormalizedRect bounds,
+        LabProposalVerdict verdict, string? verifiedTruthCategory = null)
+    {
+        var source = GetSource(sourceId);
+        if (source.Kind != LabMediaKind.Image || candidateId == Guid.Empty ||
+            !Enum.IsDefined(verdict) || !ValidBounds(bounds) ||
+            !ValidProposalText(modelId, 160) || !modelId.StartsWith("onnx:", StringComparison.Ordinal) ||
+            !ValidProposalText(candidateCategory, 120))
+            throw new ArgumentException("Only a valid image ONNX candidate can be reviewed.");
+        if (verdict == LabProposalVerdict.Correct &&
+            !ValidProposalText(verifiedTruthCategory, 80))
+            throw new ArgumentException("A human-confirmed category is required.");
+        if (_document.Assessments.Count >= MaxEntries ||
+            _document.Regions.Count >= MaxEntries && verdict == LabProposalVerdict.Correct)
+            throw new InvalidOperationException("Project assessment limit reached.");
+
+        var newRegion = verdict == LabProposalVerdict.Correct
+            ? new LabTruthRegion(Guid.NewGuid(), sourceId, bounds, verifiedTruthCategory!,
+                null, null, DateTimeOffset.UtcNow) : null;
+        var entry = new LabProposalAssessment(Guid.NewGuid(), sourceId, candidateId,
+            modelId, candidateCategory, bounds, verdict, newRegion?.Id, DateTimeOffset.UtcNow);
+        var oldUndo = _document.UndoHistory.ToArray();
+        var index = _document.Sources.FindIndex(s => s.Id == sourceId);
+        var newState = verdict == LabProposalVerdict.Correct
+            ? source with { Truth = LabTruthState.Positive, ReviewState = LabReviewState.PartiallyReviewed }
+            : source.ReviewState == LabReviewState.FullyReviewed ? source
+            : source with { ReviewState = LabReviewState.PartiallyReviewed };
+        _document.Sources[index] = newState;
+        if (newRegion is not null) _document.Regions.Add(newRegion);
+        _document.Assessments.Add(entry);
+        _document.UndoHistory.Add(new LabUndoEntry(sourceId, source, newRegion?.Id, entry.Id));
+        if (_document.UndoHistory.Count > 25) _document.UndoHistory.RemoveAt(0);
+        try { Save(); }
+        catch
+        {
+            _document.Sources[index] = source;
+            if (newRegion is not null) _document.Regions.Remove(newRegion);
+            _document.Assessments.Remove(entry);
+            _document.UndoHistory.Clear();
+            _document.UndoHistory.AddRange(oldUndo);
+            throw;
+        }
+        return entry;
+    }
+
+    /// <summary>Only explicitly inspected whole images, never videos, can be fully
+    /// reviewed. With positive regions this is a positive image, not a negative.</summary>
+    public void CompletePositiveImage(Guid sourceId, bool explicitlyInspected)
+    {
+        var source = GetSource(sourceId);
+        if (!explicitlyInspected || source.Kind != LabMediaKind.Image ||
+            source.Truth != LabTruthState.Positive ||
+            !_document.Regions.Any(r => r.SourceId == sourceId))
+            throw new InvalidOperationException("Review all of an annotated image first.");
+        ChangeSource(source, source with { ReviewState = LabReviewState.FullyReviewed }, null);
+    }
+
     public LabBookmark AddPostBookmark(string url, string note = "")
     {
         if (!XSourceLinks.TryNormalizePostUrl(url, out var canonical))
@@ -217,12 +300,16 @@ public sealed class ValidationLabStore
         var removed = edit.AddedRegionId is Guid id
             ? _document.Regions.FirstOrDefault(x => x.Id == id) : null;
         if (removed is not null) _document.Regions.Remove(removed);
+        var removedAssessment = edit.AddedAssessmentId is Guid assessmentId
+            ? _document.Assessments.FirstOrDefault(a => a.Id == assessmentId) : null;
+        if (removedAssessment is not null) _document.Assessments.Remove(removedAssessment);
         _document.UndoHistory.RemoveAt(_document.UndoHistory.Count - 1);
         try { Save(); }
         catch
         {
             _document.Sources[index] = current;
             if (removed is not null) _document.Regions.Add(removed);
+            if (removedAssessment is not null) _document.Assessments.Add(removedAssessment);
             _document.UndoHistory.Add(edit);
             throw;
         }
