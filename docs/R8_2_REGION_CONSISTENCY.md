@@ -47,3 +47,10 @@ Python requirements for offline model research: Python 3.11, CPU PyTorch 2.6.0 a
 ## Next: R8.3
 
 Independently annotate licensed adult and non-human positive/negative cases with a stable dataset schema and leakage-safe domain split (2D/3D/photo); establish quantitative confusion matrices and false-negative metrics. Then train/benchmark a genuinely small specialist, export ONNX only when validated, and integrate only behind an opt-in pending-review UI with explicit model provenance. **No private test pixels in public GitHub.**
+
+## Verified synthetic CPU result (2026-11-10)
+- Actual research CI: https://github.com/mibesamiti-png/ai-privacy-guard/actions/runs/42826965515 — **SUCCESS**, ten Python unit tests and real LAION CLIP ViT-B/32 safetensors inference (not mocked).
+- Original 256x256 geometric garment silhouette, with three intentionally overlapping synthetic labels: skirt/dress/underwear. IoU grouping reduced them to one *review* region and retained all three conflicting source labels.
+- Model load **4,579.90 ms**; crop classifier CPU inference **167.69 ms** (single run; not an accuracy benchmark). Top rank **"an illustration of a skirt" 0.7301948**, second **"a geometric shape that is not clothing" 0.2607446**; these are prompt-relative uncalibrated scores, NOT true detection confidence.
+- Output deliberately says `review_required: true`, `safety_status: "unknown"`, `safety_verified: false`. Synthetic means no people, 2D/3D domain test or actual private-media detection recall is covered.
+- JSON-only artifact `R8-2-Synthetic-Region-Crop-Research` on the run; images and weights excluded.
