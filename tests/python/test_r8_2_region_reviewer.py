@@ -34,7 +34,7 @@ def fake_pipeline(patch, candidate_labels):
 class RegionConsistencyTests(unittest.TestCase):
     def test_overlap_iou(self):
         a = (.1, .2, .4, .5)
-        self.assertEqual(1, iou(a, a))
+        self.assertAlmostEqual(1, iou(a, a), places=12)
         self.assertEqual(0, iou(a, (.8, .8, .1, .1)))
 
     def test_transitively_grouped_overlaps(self):
@@ -114,6 +114,9 @@ class RegionConsistencyTests(unittest.TestCase):
         self.assertEqual([], analyze(FakeImage(), [], fake_pipeline))
 
     def test_synthetic_fixture_contains_only_abstract_garment(self):
+        import importlib.util
+        if importlib.util.find_spec('PIL') is None:
+            self.skipTest('Pillow only installed in model research CI')
         image, proposals = synthetic_input()
         self.assertEqual((256, 256), image.size)
         self.assertEqual(3, len(proposals))
