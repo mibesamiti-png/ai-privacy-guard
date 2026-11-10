@@ -233,6 +233,9 @@ public sealed class ValidationLabStore
             _document.Regions.Count >= MaxEntries && verdict == LabProposalVerdict.Correct)
             throw new InvalidOperationException("Project assessment limit reached.");
 
+        if (_document.Assessments.Any(a => a.SourceId == sourceId && a.CandidateId == candidateId))
+            throw new InvalidOperationException("Undo the prior candidate verdict before reassessing.");
+
         var newRegion = verdict == LabProposalVerdict.Correct
             ? new LabTruthRegion(Guid.NewGuid(), sourceId, bounds, verifiedTruthCategory!,
                 null, null, DateTimeOffset.UtcNow) : null;
