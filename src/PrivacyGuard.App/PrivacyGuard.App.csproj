@@ -13,5 +13,6 @@
     <ProjectReference Include="..\PrivacyGuard.AI\PrivacyGuard.AI.csproj" />
     <ProjectReference Include="..\PrivacyGuard.Media\PrivacyGuard.Media.csproj" />
     <PackageReference Include="Microsoft.Data.Sqlite" Version="10.0.14" />
+    <PackageReference Include="Microsoft.Web.WebView2" Version="1.0.4314.35" />
   </ItemGroup>
 </Project>
