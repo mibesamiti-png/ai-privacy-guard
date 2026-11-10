@@ -66,3 +66,8 @@
 - **Verified model execution** in research workflow #42721586938: both Grounding DINO Tiny and OWLv2 loaded and inferred on one 256×256 non-human synthetic garment silhouette. 11 vs 0 **candidate boxes**, uncalibrated, overlapping and no independent ground truth. About 29.8s vs 53.3s CPU inference, respectively.
 - **Verified ordinary Windows PR workflow #42721585795**: 129 Core, 7 OBS, 30 Python integration tests PASS; app/bridge still publish. Added 9 stdlib-only Python comparison tests.
 - **Not yet integrated or measured**: a validated specialist trained on any consenting adult positive examples, still-image/3D/anime recall, prompt calibration, model snapshot immutability, UI, or live latency/safety. R8.1 is a separate Python research tool only; Windows WPF remains R7 user-facing. See `docs/R8_1_ZERO_SHOT_COMPARISON.md`.
+
+## R8.2 region label consistency study (2026-11-10)
+- Code authored on PR #20: IoU-based grouping of R8.1 clothing candidate boxes; keeps contradictory labels rather than forcing a winner. Context-padded crop ranked by independent pretrained LAION CLIP model, **research only**.
+- Dedicated research CI #42826965515 PASS: 10 tests, one genuine model inference on non-human synthetic shape. Source garment labels [skirt, dress, underwear] collapsed to one review group; 167.69ms CPU crop classification. All cases remain review-required and safety unknown.
+- Does NOT provide real dedicated accidental-exposure model, reliable anime/3D/photo recall, trained small specialist, calibrated scores, real-time performance or live OBS safety. Existing Windows WPF behavior not changed.
