@@ -64,6 +64,7 @@ public sealed class ValidationLabStore
     public IReadOnlyList<LabTruthRegion> Regions => _document.Regions.AsReadOnly();
     public IReadOnlyList<LabProposalAssessment> Assessments => _document.Assessments.AsReadOnly();
     public bool CanUndo => _document.UndoHistory.Count > 0;
+    public Guid? NextUndoSourceId => _document.UndoHistory.Count == 0 ? null : _document.UndoHistory[^1].SourceId;
     public string ProjectPath => _projectPath;
 
     private ValidationLabStore(string path, ValidationLabDocument document)
